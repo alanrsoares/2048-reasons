@@ -1,0 +1,68 @@
+.Grid {
+  padding: 5px;
+  margin: 10px;
+}
+
+.Grid-row {
+  display: flex;
+  justify-content: center;
+}
+
+.Grid-tile {
+  width: 100px;
+  height: 100px;
+  line-height: 100px;
+  align-items: center;
+  border: solid 1px #ccc;
+  border-radius: 4px;
+  text-align: center;
+  margin: 4px;
+  font-size: 30px;
+  font-weight: bold;
+  color: #666;
+  background: rgba(238, 228, 218, 0.35);
+  transition: background 0.5s;
+}
+
+.tile-2 {
+  background: rgb(238, 228, 218);
+}
+.tile-4 {
+  background: rgb(237, 224, 200);
+}
+.tile-8 {
+  color: #f9f6f2;
+  background: rgb(242, 177, 121);
+}
+.tile-16 {
+  color: #f9f6f2;
+  background: rgb(245, 149, 99);
+}
+.tile-32 {
+  color: #f9f6f2;
+  background: rgb(246, 124, 95);
+}
+.tile-64 {
+  color: #f9f6f2;
+  background: rgb(246, 94, 59);
+}
+.tile-128 {
+  color: #f9f6f2;
+  background: rgb(237, 207, 114);
+}
+.tile-256 {
+  color: #f9f6f2;
+  background: rgb(237, 204, 97);
+}
+.tile-512 {
+  color: #f9f6f2;
+  background: rgb(237, 200, 80);
+}
+.tile-1024 {
+  color: #f9f6f2;
+  background: rgb(237, 197, 63);
+}
+.tile-2048 {
+  color: #f9f6f2;
+  background: rgb(237, 194, 46);
+}

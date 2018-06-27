@@ -1,21 +1,23 @@
-[%bs.raw {|require('./App.css')|}];
+open Utils;
 
-[@bs.module] external logo : string = "./logo.svg";
-
+let seed: Game.grid = [
+  [0, 0, 0, 0],
+  [0, 2, 0, 0],
+  [0, 2, 2, 0],
+  [0, 0, 0, 0],
+];
 let component = ReasonReact.statelessComponent("App");
 
-let make = (~message, _children) => {
+let make = _children => {
   ...component,
   render: _self =>
-    <div className="App">
-      <div className="App-header">
-        <img src=logo className="App-logo" alt="logo" />
-        <h2> (ReasonReact.string(message)) </h2>
-      </div>
-      <p className="App-intro">
-        (ReasonReact.string("To get started, edit"))
-        <code> (ReasonReact.string(" src/App.re ")) </code>
-        (ReasonReact.string("and save to reload."))
-      </p>
+    <div>
+      <header>
+        <h1 className="heading"> (render_string("2048")) </h1>
+      </header>
+      <div> <Grid seed /> </div>
+      <section className="hint">
+        (render_string("use kayboard arrow keys to play"))
+      </section>
     </div>,
 };
