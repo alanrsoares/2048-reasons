@@ -1,3 +1,5 @@
+open Rationale.Function;
+
 type row = list(int);
 
 type grid = list(row);
@@ -21,7 +23,7 @@ let shift_zeroes = (xs: row) : row => {
   List.append(pad, ys);
 };
 
-let get_columns = (reverse: bool, xs: grid) =>
+let get_cols = (reverse: bool, xs: grid) =>
   xs
   |> List.(mapi(x => mapi((y, _) => get_position({x, y}, xs))))
   |> List.map(maybe_reverse(reverse));
@@ -30,16 +32,16 @@ let get_rows = (reverse: bool, xs: grid) =>
   xs |> List.map(maybe_reverse(reverse));
 
 let merge_row = (xs: row) => {
-  let rec merge = (index: int, xs: row) =>
-    switch (xs) {
+  let rec merge = (index: int, ys: row) =>
+    switch (ys) {
     | [a, b, c, d] =>
       switch (index) {
-      | 0 => merge(1, [0, a, b, c + d])
-      | 1 => merge(2, [0, a, b + c, d])
-      | 2 => merge(3, [0, a + b, c, d])
-      | _ => xs
+      | 0 => merge(1, c === d ? [0, a, b, c + d] : ys)
+      | 1 => merge(2, b === c ? [0, a, b + c, d] : ys)
+      | 2 => merge(3, a === b ? [0, a + b, c, d] : ys)
+      | _ => ys
       }
-    | _ => xs
+    | _ => ys
     };
 
   xs |> shift_zeroes |> merge(0);
@@ -53,19 +55,10 @@ type direction =
   | Up
   | Down;
 
-let get_merger = (d: direction) =>
+let merge = (d: direction) =>
   switch (d) {
   | Right => merge_grid
-  | Left => (xs => xs |> get_rows(true) |> merge_grid |> get_rows(true))
-  | Down => (
-      xs => xs |> get_columns(false) |> merge_grid |> get_columns(false)
-    )
-  | Up => (
-      xs =>
-        xs
-        |> get_columns(true)
-        |> merge_grid
-        |> get_columns(false)
-        |> List.rev
-    )
+  | Left => get_rows(true) ||> merge_grid ||> get_rows(true)
+  | Down => get_cols(false) ||> merge_grid ||> get_cols(false)
+  | Up => get_cols(true) ||> merge_grid ||> get_cols(false) ||> List.rev
   };
