@@ -1,5 +1,6 @@
 open Jest;
+open Expect;
 
-test("addition", (_) =>
-  Expect.(expect(3 + 4) |> toBe(7))
+test("addition", () =>
+  expect(3 + 4) |> toBe(7)
 );
