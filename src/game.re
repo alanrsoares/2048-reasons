@@ -1,4 +1,4 @@
-open Rationale.Function;
+open Rationale.Function.Infix;
 
 type row = list(int);
 
@@ -59,6 +59,6 @@ let merge = (d: direction) =>
   switch (d) {
   | Right => merge_grid
   | Left => get_rows(true) ||> merge_grid ||> get_rows(true)
-  | Down => get_cols(false) ||> merge_grid ||> get_cols(false)
   | Up => get_cols(true) ||> merge_grid ||> get_cols(false) ||> List.rev
+  | Down => get_cols(false) ||> merge_grid ||> get_cols(false)
   };

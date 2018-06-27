@@ -54,26 +54,26 @@ test("merge:Right", () => {
   let original = [[2, 0, 4, 0], [1, 0, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
   let expected = [[0, 0, 2, 4], [0, 0, 0, 2], [0, 0, 0, 0], [0, 0, 0, 0]];
 
-  expect(Game.merge(Right, original)) |> toEqual(expected);
+  expect(Game.merge(Game.Right, original)) |> toEqual(expected);
 });
 
 test("merge:Left", () => {
   let original = [[2, 0, 4, 0], [1, 0, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
   let expected = [[2, 4, 0, 0], [2, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
 
-  expect(Game.merge(Left, original)) |> toEqual(expected);
-});
-
-test("merge:Down", () => {
-  let original = [[0, 2, 0, 0], [0, 2, 0, 0], [0, 4, 0, 0], [0, 4, 0, 0]];
-  let expected = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 4, 0, 0], [0, 8, 0, 0]];
-
-  expect(Game.merge(Down, original)) |> toEqual(expected);
+  expect(Game.merge(Game.Left, original)) |> toEqual(expected);
 });
 
 test("merge:Up", () => {
   let original = [[0, 2, 0, 0], [0, 2, 0, 0], [0, 4, 0, 0], [0, 4, 0, 0]];
   let expected = [[0, 4, 0, 0], [0, 8, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
 
-  expect(Game.merge(Up, original)) |> toEqual(expected);
+  expect(Game.merge(Game.Up, original)) |> toEqual(expected);
+});
+
+test("merge:Down", () => {
+  let original = [[0, 2, 0, 0], [0, 2, 0, 0], [0, 4, 0, 0], [0, 4, 0, 0]];
+  let expected = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 4, 0, 0], [0, 8, 0, 0]];
+
+  expect(Game.merge(Game.Down, original)) |> toEqual(expected);
 });
