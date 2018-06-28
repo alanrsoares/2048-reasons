@@ -29,17 +29,15 @@ let shift_zeroes = (xs: row) : row => {
   pad @ filtered;
 };
 
-let find_zeroes = (xs: grid) : list(position) =>
-  xs
-  |> RList.fold_lefti(
-       (acc, y, row) =>
-         row
-         |> RList.fold_lefti(
-              (acc', x, tile) => tile === 0 ? acc' @ [{y, x}] : acc',
-              acc,
-            ),
-       [],
-     );
+let find_zeroes =
+  RList.fold_lefti(
+    (acc, y) =>
+      RList.fold_lefti(
+        (acc', x, tile) => tile === 0 ? acc' @ [{y, x}] : acc',
+        acc,
+      ),
+    [],
+  );
 
 let get_cols = (reverse: bool, xs: grid) =>
   xs
