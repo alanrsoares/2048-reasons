@@ -15,9 +15,7 @@ let render_tiles =
 
 let render_rows =
   List.mapi((y, row) =>
-    <div className="Grid-row" key=("row-" ++ string_of_int(y))>
-      (row |> render_tiles)
-    </div>
+    <div className="Grid-row" key={j|row-$y|j}> (row |> render_tiles) </div>
   )
   ||> render_list;
 
