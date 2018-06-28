@@ -33,15 +33,17 @@ let make = _children => {
   };
 
   let random_seed = int_of_float(Js.Date.now());
-  let place_random_2 = Game.fill_random_zero(random_seed);
+  let place_random_value = Game.fill_random_zero(random_seed);
 
   {
     ...component,
     initialState: () => seed,
     reducer: (action, state) =>
       switch (action) {
-      | Move(d) =>
-        ReasonReact.Update(Game.merge(d, state) |> place_random_2(state))
+      | Move(direction) =>
+        ReasonReact.Update(
+          Game.merge(direction, state) |> place_random_value(state),
+        )
       | Reset => ReasonReact.Update(seed)
       },
     didMount: self => {
