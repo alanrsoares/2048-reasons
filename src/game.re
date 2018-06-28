@@ -89,7 +89,8 @@ let fill_random_zero = (random_seed: int) => {
     } else {
       let zeroes = new_grid |> find_zeroes;
       let zero = List.nth(zeroes, Random.int(List.length(zeroes) - 1));
+      let new_cell_value = Random.int(100) < 90 ? 2 : 4;
 
-      update_grid(2, zero, new_grid);
+      update_grid(new_cell_value, zero, new_grid);
     };
 };
