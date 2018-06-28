@@ -8,6 +8,13 @@ test("shift_zeroes", () => {
   expect(Game.shift_zeroes(original)) |> toEqual(expected);
 });
 
+test("find_zeroes", () => {
+  let original = [[0, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 0, 1]];
+  let expected: list(Game.position) = [{y: 0, x: 0}, {y: 3, x: 2}];
+
+  expect(Game.find_zeroes(original)) |> toEqual(expected);
+});
+
 test("merge_row", () => {
   let original = [0, 1, 1, 0];
   let expected = [0, 0, 0, 2];

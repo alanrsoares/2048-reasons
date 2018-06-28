@@ -7,7 +7,7 @@ let component = ReasonReact.statelessComponent("Grid");
 
 let render_tiles =
   List.mapi((x, tile) =>
-    <div className="Grid-tile" key=("tile-" ++ string_of_int(x))>
+    <div className={j|Grid-tile tile-$tile|j} key={j|tile-$x|j}>
       (render_string(tile > 0 ? string_of_int(tile) : ""))
     </div>
   )
@@ -21,7 +21,7 @@ let render_rows =
   )
   ||> render_list;
 
-let make = (~seed: Game.grid, _children) => {
+let make = (~data: Game.grid, _children) => {
   ...component,
-  render: _self => <div className="Grid"> (seed |> render_rows) </div>,
+  render: _self => <div className="Grid"> (data |> render_rows) </div>,
 };

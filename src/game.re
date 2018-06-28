@@ -1,3 +1,4 @@
+open Rationale;
 open Rationale.Function.Infix;
 
 type row = list(int);
@@ -22,6 +23,19 @@ let shift_zeroes = (xs: row) : row => {
 
   List.append(pad, ys);
 };
+
+let find_zeroes = (xs: grid) : list(position) =>
+  xs
+  |> RList.fold_lefti(
+       (acc, y, row) =>
+         row
+         |> RList.fold_lefti(
+              (acc', x, tile) =>
+                tile === 0 ? List.append(acc', [{y, x}]) : acc',
+              acc,
+            ),
+       [],
+     );
 
 let get_cols = (reverse: bool, xs: grid) =>
   xs
@@ -55,10 +69,31 @@ type direction =
   | Up
   | Down;
 
-let merge = (d: direction) =>
+let merge = (d: direction) : (grid => grid) =>
   switch (d) {
   | Right => merge_grid
   | Left => get_rows(true) ||> merge_grid ||> get_rows(true)
   | Up => get_cols(true) ||> merge_grid ||> get_cols(false) ||> List.rev
   | Down => get_cols(false) ||> merge_grid ||> get_cols(false)
   };
+
+let update_grid = (value: int, zero: position, grid: grid) => {
+  let old_row = List.nth(grid, zero.y);
+  let new_row = old_row |> RList.update(value, zero.x);
+
+  grid |> RList.update(new_row, zero.y);
+};
+
+let fill_random_zero = (random_seed: int) => {
+  Random.init(random_seed);
+
+  (old_grid: grid, new_grid: grid) =>
+    if (old_grid == new_grid) {
+      old_grid;
+    } else {
+      let zeroes = new_grid |> find_zeroes;
+      let zero = List.nth(zeroes, Random.int(List.length(zeroes) - 1));
+
+      update_grid(2, zero, new_grid);
+    };
+};
