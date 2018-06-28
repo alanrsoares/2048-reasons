@@ -55,7 +55,7 @@ let make = _children => {
     render: self =>
       <div>
         <header>
-          <h1 className="heading"> (render_string("2048")) </h1>
+          <h1 className="heading"> (render_string("2048 Reasons")) </h1>
         </header>
         <Grid data=self.state />
         <section className="hint">
