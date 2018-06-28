@@ -1,6 +1,9 @@
 {
   "name": "2048-reasons",
   "version": "0.1.0",
+  "description": "A functional implementation of the world famous 2048 Game in ReasonMl and ReasonReact",
+  "author": "Alan R. Soares <alanrsoars@gmail.com> github.com/alanrsoares",
+  "homepage": "http://alanrsoares.github.io/2048-reasons",
   "private": true,
   "dependencies": {
     "rationale": "^0.1.4",

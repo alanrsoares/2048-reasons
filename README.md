@@ -1,3 +1,3 @@
 # 2048 Reasons
 
-A functional 2048 implementation in ReasonMl and ReasonReact
+A functional implementation of the world famous 2048 Game in ReasonMl and ReasonReact
