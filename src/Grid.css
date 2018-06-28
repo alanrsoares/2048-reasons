@@ -4,7 +4,7 @@
   background: #baa;
   width: 440px;
   margin: auto;
-  border-radius: 4px;
+  border-radius: 7px;
 }
 
 .Grid-row {
@@ -18,7 +18,7 @@
   line-height: 100px;
   align-items: center;
   border: solid 1px #ccc;
-  border-radius: 4px;
+  border-radius: 7px;
   text-align: center;
   margin: 4px;
   font-size: 50px;
@@ -29,68 +29,68 @@
 }
 
 .tile-2 {
-  background: rgb(238, 228, 218);
+  background: #eee;
 }
 
 .tile-4 {
-  background: rgb(237, 224, 200);
+  background: #eec;
 }
 
 .tile-8 {
-  color: #f9f6f2;
-  background: rgb(242, 177, 121);
+  color: #ffe;
+  background: #fb8;
 }
 
 .tile-16 {
-  color: #f9f6f2;
-  background: rgb(245, 149, 99);
+  color: #ffe;
+  background: #f96;
   font-size: 45px;
 }
 
 .tile-32 {
-  color: #f9f6f2;
-  background: rgb(246, 124, 95);
+  color: #ffe;
+  background: #f75;
   font-size: 45px;
 }
 
 .tile-64 {
-  color: #f9f6f2;
-  background: rgb(246, 94, 59);
+  color: #ffe;
+  background: #f53;
   font-size: 45px;
 }
 
 .tile-128 {
-  color: #f9f6f2;
-  background: rgb(237, 207, 114);
+  color: #ffe;
+  background: #ec7;
   font-size: 40px;
 }
 
 .tile-256 {
-  color: #f9f6f2;
-  background: rgb(237, 204, 97);
+  color: #ffe;
+  background: #ec6;
   font-size: 40px;
 }
 
 .tile-512 {
-  color: #f9f6f2;
-  background: rgb(237, 200, 80);
+  color: #ffe;
+  background: #ec5;
   font-size: 40px;
 }
 
 .tile-1024 {
-  color: #f9f6f2;
-  background: rgb(237, 197, 63);
+  color: #ffe;
+  background: #ec3;
   font-size: 35px;
 }
 
 .tile-2048 {
-  color: #f9f6f2;
-  background: rgb(237, 194, 46);
+  color: #ffe;
+  background: #ec1;
   font-size: 35px;
 }
 
 .tile-4096 {
-  color: #f9f6f2;
+  color: #ffe;
   background: rgb(53, 196, 89);
   font-size: 35px;
 }
