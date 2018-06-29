@@ -80,17 +80,16 @@ let update_grid = (value: int, zero: position, grid: grid) => {
   grid |> RList.update(new_row, zero.y);
 };
 
-let fill_random_zero = (random_seed: int) => {
+let fill_random_empty_tile = (random_seed: int) => {
   Random.init(random_seed);
 
-  (old_grid: grid, new_grid: grid) =>
-    if (old_grid == new_grid) {
-      old_grid;
-    } else {
-      let zeroes = new_grid |> find_zeroes;
-      let zero = List.nth(zeroes, Random.int(List.length(zeroes) - 1));
-      let new_cell_value = Random.int(100) < 90 ? 2 : 4;
+  (new_grid: grid) => {
+    let empty_tiles = new_grid |> find_zeroes;
+    let random_empty_position =
+      List.nth(empty_tiles, Random.int(List.length(empty_tiles) - 1));
 
-      update_grid(new_cell_value, zero, new_grid);
-    };
+    let new_cell_value = Random.int(100) < 90 ? 2 : 4;
+
+    update_grid(new_cell_value, random_empty_position, new_grid);
+  };
 };

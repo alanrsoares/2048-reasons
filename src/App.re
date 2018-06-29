@@ -6,10 +6,10 @@ type action =
   | Move(Game.direction)
   | Reset;
 
-let seed: Game.grid = [
+let empty_grid: Game.grid = [
   [0, 0, 0, 0],
-  [0, 2, 0, 0],
-  [0, 2, 2, 0],
+  [0, 0, 0, 0],
+  [0, 0, 0, 0],
   [0, 0, 0, 0],
 ];
 
@@ -17,9 +17,7 @@ let component = ReasonReact.reducerComponent("App");
 
 type self = ReasonReact.self(Game.grid, ReasonReact.noRetainedProps, action);
 
-let make_seed = () => Js.Date.now() |> int_of_float;
-
-let make = _children => {
+let make = (~randomSeed, _children) => {
   let on_keyup = (event, self: self) => {
     let key = event |> ReactEventRe.Keyboard.key;
 
@@ -32,19 +30,23 @@ let make = _children => {
     };
   };
 
-  let random_seed = int_of_float(Js.Date.now());
-  let place_random_value = Game.fill_random_zero(random_seed);
+  let place_random_value = Game.fill_random_empty_tile(randomSeed);
+
+  let initial_state = empty_grid |> place_random_value |> place_random_value;
 
   {
     ...component,
-    initialState: () => seed,
+    initialState: () => initial_state,
     reducer: (action, state) =>
       switch (action) {
       | Move(direction) =>
+        let merged = Game.merge(direction, state);
+        let is_unchanged = merged == state;
+
         ReasonReact.Update(
-          Game.merge(direction, state) |> place_random_value(state),
-        )
-      | Reset => ReasonReact.Update(seed)
+          is_unchanged ? state : merged |> place_random_value,
+        );
+      | Reset => ReasonReact.Update(initial_state)
       },
     didMount: self => {
       let keyup_bound_handler = self.handle(on_keyup);
