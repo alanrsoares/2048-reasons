@@ -49,15 +49,13 @@ let make = (~randomSeed, _children) => {
     reducer: (action, state) =>
       switch (action) {
       | Move(direction) =>
-        let new_state = Game.merge(direction, state);
-        let is_unchanged = new_state == state;
+        let new_grid = Game.merge(direction, state);
+        let is_unchanged = new_grid == state;
 
         if (is_unchanged) {
           ReasonReact.NoUpdate;
         } else {
-          let new_grid = new_state |> place_random_value;
-
-          switch (new_grid) {
+          switch (new_grid |> place_random_value) {
           | Some(new_grid') => ReasonReact.Update(new_grid')
           | None => ReasonReact.NoUpdate /* game over */
           };
