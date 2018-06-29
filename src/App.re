@@ -32,7 +32,16 @@ let make = (~randomSeed, _children) => {
 
   let place_random_value = Game.fill_random_empty_tile(randomSeed);
 
-  let initial_state = empty_grid |> place_random_value |> place_random_value;
+  let maybe_place_value = grid => {
+    let new_grid = grid |> place_random_value;
+
+    switch (new_grid) {
+    | None => grid
+    | Some(new_grid') => new_grid'
+    };
+  };
+
+  let initial_state = empty_grid |> maybe_place_value |> maybe_place_value;
 
   {
     ...component,
@@ -46,7 +55,12 @@ let make = (~randomSeed, _children) => {
         if (is_unchanged) {
           ReasonReact.NoUpdate;
         } else {
-          ReasonReact.Update(new_state |> place_random_value);
+          let new_grid = new_state |> place_random_value;
+
+          switch (new_grid) {
+          | Some(new_grid') => ReasonReact.Update(new_grid')
+          | None => ReasonReact.NoUpdate /* game over */
+          };
         };
       | Reset => ReasonReact.Update(initial_state)
       },

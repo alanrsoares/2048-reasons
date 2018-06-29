@@ -83,9 +83,9 @@ let update_grid = (value: int, zero: position, grid: grid) => {
 let fill_random_empty_tile = (random_seed: int) => {
   Random.init(random_seed);
 
-  (new_grid: grid) => {
+  (grid: grid) => {
     let position =
-      switch (new_grid |> find_zeroes) {
+      switch (grid |> find_zeroes) {
       | [] => None
       | [first_position] => Some(first_position)
       | empty_tiles =>
@@ -99,10 +99,10 @@ let fill_random_empty_tile = (random_seed: int) => {
       };
 
     switch (position) {
-    | None => new_grid
+    | None => None
     | Some(safe_position) =>
       let new_tile_value = Random.int(100) < 90 ? 2 : 4;
-      update_grid(new_tile_value, safe_position, new_grid);
+      Some(update_grid(new_tile_value, safe_position, grid));
     };
   };
 };
