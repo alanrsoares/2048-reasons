@@ -49,12 +49,11 @@ let make = (~randomSeed, _children) => {
       | Reset => ReasonReact.Update(initial_state)
       },
     didMount: self => {
-      let keyup_bound_handler = self.handle(on_keyup);
+      let handler = self.handle(on_keyup);
+      let event = "keyup";
 
-      add_keyboard_event_listener("keyup", keyup_bound_handler);
-      self.onUnmount(() =>
-        remove_keyboard_event_listener("keyup", keyup_bound_handler)
-      );
+      add_keyboard_event_listener(event, handler);
+      self.onUnmount(() => remove_keyboard_event_listener(event, handler));
     },
     render: self =>
       <div>
