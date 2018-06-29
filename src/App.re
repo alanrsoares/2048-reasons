@@ -47,9 +47,8 @@ let make = (~randomSeed, _children) => {
       switch (action) {
       | Move(direction) =>
         let new_grid = Game.merge(direction, state);
-        let is_unchanged = new_grid == state;
 
-        if (is_unchanged) {
+        if (new_grid == state) {
           ReasonReact.NoUpdate;
         } else {
           switch (new_grid |> place_random_value) {
