@@ -32,14 +32,11 @@ let make = (~randomSeed, _children) => {
 
   let place_random_value = Game.fill_random_empty_tile(randomSeed);
 
-  let maybe_place_value = grid => {
-    let new_grid = grid |> place_random_value;
-
-    switch (new_grid) {
+  let maybe_place_value = grid =>
+    switch (grid |> place_random_value) {
     | None => grid
-    | Some(new_grid') => new_grid'
+    | Some(new_grid) => new_grid
     };
-  };
 
   let initial_state = empty_grid |> maybe_place_value |> maybe_place_value;
 
