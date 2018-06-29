@@ -5,3 +5,6 @@ A Functional Programming implementation of the world famous [2048 Game](https://
 check out the [demo](https://alanrsoares.github.io/2048-reasons/)
 
 ![screenshot](public/screenshot.png)
+
+## License
+MIT
