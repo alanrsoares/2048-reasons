@@ -57,7 +57,7 @@ let make = (~randomSeed, _children) => {
         } else {
           switch (new_grid |> place_random_value) {
           | Some(new_grid') => ReasonReact.Update(new_grid')
-          | None => ReasonReact.NoUpdate /* game over */
+          | None => ReasonReact.NoUpdate /* GAME_OVER! */
           };
         };
       | Reset => ReasonReact.Update(initial_state)
