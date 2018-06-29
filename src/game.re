@@ -84,12 +84,22 @@ let fill_random_empty_tile = (random_seed: int) => {
   Random.init(random_seed);
 
   (new_grid: grid) => {
-    let empty_tiles = new_grid |> find_zeroes;
-    let random_empty_position =
-      List.nth(empty_tiles, Random.int(List.length(empty_tiles) - 1));
-
     let new_cell_value = Random.int(100) < 90 ? 2 : 4;
+    let update = update_grid(new_cell_value);
 
-    update_grid(new_cell_value, random_empty_position, new_grid);
+    switch (new_grid |> find_zeroes) {
+    | [] => new_grid
+    | [position] => update(position, new_grid)
+    | empty_tiles =>
+      let safe_index =
+        switch (empty_tiles |> List.length |> Random.int) {
+        | 0 => 0
+        | i => i - 1
+        };
+
+      let random_position = List.nth(empty_tiles, safe_index);
+
+      update(random_position, new_grid);
+    };
   };
 };
