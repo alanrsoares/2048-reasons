@@ -40,12 +40,14 @@ let make = (~randomSeed, _children) => {
     reducer: (action, state) =>
       switch (action) {
       | Move(direction) =>
-        let merged = Game.merge(direction, state);
-        let is_unchanged = merged == state;
+        let new_state = Game.merge(direction, state);
+        let is_unchanged = new_state == state;
 
-        ReasonReact.Update(
-          is_unchanged ? state : merged |> place_random_value,
-        );
+        if (is_unchanged) {
+          ReasonReact.NoUpdate;
+        } else {
+          ReasonReact.Update(new_state |> place_random_value);
+        };
       | Reset => ReasonReact.Update(initial_state)
       },
     didMount: self => {
