@@ -16,12 +16,6 @@ type direction =
   | Up
   | Down;
 
-type touchEvent = {
-  x: float,
-  y: float,
-  timestamp: float,
-};
-
 let length_diff = (a, b) => List.length(a) - List.length(b);
 
 let maybe_reverse = (reverse: bool, xs: row) => reverse ? List.rev(xs) : xs;

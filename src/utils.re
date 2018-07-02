@@ -32,9 +32,3 @@ module TouchList = {
   external unsafeAnyToArray : 'a => array('a) = "%identity";
   let first = touchlist => unsafeAnyToArray(touchlist)[0];
 };
-
-let get_touch_position = touches : Game.touchEvent => {
-  let touch = TouchList.first(touches);
-
-  {x: touch##screenX, y: touch##screenY, timestamp: Js.Date.now()};
-};
