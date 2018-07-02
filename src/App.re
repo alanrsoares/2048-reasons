@@ -76,7 +76,6 @@ let make = (~randomSeed, _children) => {
         <section className="hint">
           (render_string({js|use ←, ↑, → and ↓ to play|js}))
         </section>
-        <GithubForkRibbon />
       </div>,
   };
 };
