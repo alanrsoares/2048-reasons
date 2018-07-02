@@ -37,25 +37,25 @@ let get_swipe_direction = ({touchStart, touchEnd}) : option(Game.direction) => {
   let min = 4000.0;
 
   let time_delta = touchEnd.timestamp -. touchStart.timestamp;
-  let get_speed = (a, b) => (a -. b) *. 10000.0 /. time_delta;
+  let get_swipe_speed = (a, b) => (a -. b) *. 10000.0 /. time_delta;
 
-  let down = get_speed(touchEnd.y, touchStart.y);
-  let right = get_speed(touchEnd.x, touchStart.x);
+  let y_speed = get_swipe_speed(touchEnd.y, touchStart.y);
+  let x_speed = get_swipe_speed(touchEnd.x, touchStart.x);
 
   let direction = ref(None);
 
-  if (abs_float(down) > abs_float(right)) {
-    if (down -. min > 0.0) {
+  if (abs_float(y_speed) > abs_float(x_speed)) {
+    if (y_speed -. min > 0.0) {
       direction := Some(Game.Down);
     };
-    if (down +. min < 0.0) {
+    if (y_speed +. min < 0.0) {
       direction := Some(Game.Up);
     };
   } else {
-    if (right -. min > 0.0) {
+    if (x_speed -. min > 0.0) {
       direction := Some(Game.Right);
     };
-    if (right +. min < 0.0) {
+    if (x_speed +. min < 0.0) {
       direction := Some(Game.Left);
     };
   };
