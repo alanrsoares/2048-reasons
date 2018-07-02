@@ -1,3 +1,5 @@
+open Rationale.Function.Infix;
+
 [@bs.val]
 external add_keyboard_event_listener :
   (string, ReactEventRe.Keyboard.t => unit) => unit =
@@ -32,3 +34,5 @@ module TouchList = {
   external unsafeAnyToArray : 'a => array('a) = "%identity";
   let first = touchlist => unsafeAnyToArray(touchlist)[0];
 };
+
+let abs_float = int_of_float ||> abs;

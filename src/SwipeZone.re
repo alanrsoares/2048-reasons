@@ -44,9 +44,7 @@ let get_swipe_direction = ({touchStart, touchEnd}) : option(Game.direction) => {
 
   let gesture = ref(None);
 
-  let abs' = int_of_float ||> abs;
-
-  if (abs'(down) > abs'(right)) {
+  if (abs_float(down) > abs_float(right)) {
     if (down +. min < 0.0) {
       if (down -. min > 0.0) {
         gesture := Some(Game.Down);
