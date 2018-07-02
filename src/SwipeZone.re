@@ -42,27 +42,25 @@ let get_swipe_direction = ({touchStart, touchEnd}) : option(Game.direction) => {
   let down = get_speed(touchEnd.y, touchStart.y);
   let right = get_speed(touchEnd.x, touchStart.x);
 
-  let gesture = ref(None);
-
-  Js.log2(down, right);
+  let direction = ref(None);
 
   if (abs_float(down) > abs_float(right)) {
     if (down -. min > 0.0) {
-      gesture := Some(Game.Down);
+      direction := Some(Game.Down);
     };
     if (down +. min < 0.0) {
-      gesture := Some(Game.Up);
+      direction := Some(Game.Up);
     };
   } else {
     if (right -. min > 0.0) {
-      gesture := Some(Game.Right);
+      direction := Some(Game.Right);
     };
     if (right +. min < 0.0) {
-      gesture := Some(Game.Left);
+      direction := Some(Game.Left);
     };
   };
 
-  gesture^;
+  direction^;
 };
 
 let make = (~onSwipe: Game.direction => unit, children) => {
