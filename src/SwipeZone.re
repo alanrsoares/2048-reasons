@@ -69,6 +69,8 @@ let make = (~onSwipe: Game.direction => unit, children) => {
       event |> ReactEventRe.Touch.targetTouches |> get_touch_position;
 
   let on_touch_end = event => {
+    ReactEventRe.Touch.preventDefault(event);
+
     touchRecorder.touchEnd =
       event |> ReactEventRe.Touch.changedTouches |> get_touch_position;
 
