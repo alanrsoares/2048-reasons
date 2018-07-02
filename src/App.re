@@ -15,7 +15,7 @@ let empty_grid: Game.grid = [
 
 let component = ReasonReact.reducerComponent("App");
 
-type self = ReasonReact.self(Game.grid, ReasonReact.noRetainedProps, action);
+type self = ReasonReact.self(state, ReasonReact.noRetainedProps, action);
 
 let make = (~randomSeed, _children) => {
   let on_keyup = (event, self: self) => {
