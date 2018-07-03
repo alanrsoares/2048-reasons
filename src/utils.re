@@ -34,5 +34,3 @@ module TouchList = {
   external unsafeAnyToArray : 'a => array('a) = "%identity";
   let first = touchlist => unsafeAnyToArray(touchlist)[0];
 };
-
-let abs_float = int_of_float ||> abs;
