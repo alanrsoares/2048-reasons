@@ -69,7 +69,13 @@ let make = (~randomSeed, _children) => {
     render: self =>
       <div>
         <header>
-          <h1 className="heading"> (render_string("2048 Reasons")) </h1>
+          <h1 className="heading">
+            (render_string("2048 "))
+            <span className="reason">
+              <span className="re"> (render_string("RE")) </span>
+              (render_string("ASONS"))
+            </span>
+          </h1>
         </header>
         <div className="controls">
           <button

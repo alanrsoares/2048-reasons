@@ -1,5 +1,5 @@
 body {
-  background-color: #faf8ef;
+  background-color: white;
 }
 
 * {
@@ -10,6 +10,14 @@ body {
   text-align: center;
   color: #666;
   font-size: 40px;
+}
+
+.re {
+  background: #db4d3f;
+  color: white;
+  font-size: 40px;
+  padding: 20px 2px 0 10px;
+  margin-right: 1px;
 }
 
 .controls {
@@ -26,6 +34,8 @@ body {
   font-size: 20px;
   padding: 4px 8px;
   cursor: pointer;
+  color: #666;
+  font-weight: bold;
 }
 
 .hint {

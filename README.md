@@ -1,4 +1,4 @@
-# 2048 Reasons
+# ![2048 Reasons](public/logo.png)
 
 [![Travis](https://img.shields.io/travis/alanrsoares/2048-reasons/master.svg)](https://travis-ci.org/alanrsoares/2048-reasons)
 
