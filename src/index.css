@@ -12,6 +12,22 @@ body {
   font-size: 40px;
 }
 
+.controls {
+  width: 340px;
+  margin: auto;
+  margin-bottom: 10px;
+  text-align: right;
+}
+
+.new-game {
+  border: solid 1px #ccc;
+  border-radius: 4px;
+  background: #eee;
+  font-size: 20px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
 .hint {
   margin-top: 10px;
   text-align: center;

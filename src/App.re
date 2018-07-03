@@ -38,11 +38,12 @@ let make = (~randomSeed, _children) => {
     | Some(new_grid) => new_grid
     };
 
-  let initial_state = empty_grid |> maybe_place_value |> maybe_place_value;
+  let make_initial_state = () =>
+    empty_grid |> maybe_place_value |> maybe_place_value;
 
   {
     ...component,
-    initialState: () => initial_state,
+    initialState: () => make_initial_state(),
     reducer: (action, state) =>
       switch (action) {
       | Move(direction) =>
@@ -56,7 +57,7 @@ let make = (~randomSeed, _children) => {
           | None => ReasonReact.NoUpdate /* GAME_OVER! */
           };
         };
-      | Reset => ReasonReact.Update(initial_state)
+      | Reset => ReasonReact.Update(make_initial_state())
       },
     didMount: self => {
       let handler = self.handle(on_keyup);
@@ -70,6 +71,14 @@ let make = (~randomSeed, _children) => {
         <header>
           <h1 className="heading"> (render_string("2048 Reasons")) </h1>
         </header>
+        <div className="controls">
+          <button
+            className="new-game"
+            onClick=(_ => self.send(Reset))
+            onTouchEnd=(_ => self.send(Reset))>
+            (render_string("new game"))
+          </button>
+        </div>
         <SwipeZone onSwipe=(direction => self.send(Move(direction)))>
           <Grid data=self.state />
         </SwipeZone>

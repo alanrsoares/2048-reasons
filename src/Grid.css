@@ -2,7 +2,7 @@
   padding: 5px;
   margin: 10px;
   background: #baa;
-  width: 440px;
+  width: 340px;
   margin: auto;
   border-radius: 7px;
 }
@@ -13,15 +13,15 @@
 }
 
 .Grid-tile {
-  width: 100px;
-  height: 100px;
-  line-height: 100px;
+  width: 74px;
+  height: 74px;
+  line-height: 74px;
   align-items: center;
   border: solid 1px #ccc;
   border-radius: 7px;
   text-align: center;
   margin: 4px;
-  font-size: 50px;
+  font-size: 48px;
   font-weight: bold;
   color: #666;
   background: rgba(238, 228, 218, 0.35);
@@ -44,53 +44,53 @@
 .tile-16 {
   color: #ffe;
   background: #f96;
-  font-size: 45px;
+  font-size: 42px;
 }
 
 .tile-32 {
   color: #ffe;
   background: #f75;
-  font-size: 45px;
+  font-size: 42px;
 }
 
 .tile-64 {
   color: #ffe;
   background: #f53;
-  font-size: 45px;
+  font-size: 42px;
 }
 
 .tile-128 {
   color: #ffe;
   background: #ec7;
-  font-size: 40px;
+  font-size: 38px;
 }
 
 .tile-256 {
   color: #ffe;
   background: #ec6;
-  font-size: 40px;
+  font-size: 38px;
 }
 
 .tile-512 {
   color: #ffe;
   background: #ec5;
-  font-size: 40px;
+  font-size: 38px;
 }
 
 .tile-1024 {
   color: #ffe;
   background: #ec3;
-  font-size: 35px;
+  font-size: 30px;
 }
 
 .tile-2048 {
   color: #ffe;
   background: #ec1;
-  font-size: 35px;
+  font-size: 30px;
 }
 
 .tile-4096 {
   color: #ffe;
   background: rgb(53, 196, 89);
-  font-size: 35px;
+  font-size: 30px;
 }
