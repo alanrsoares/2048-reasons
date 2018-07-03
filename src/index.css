@@ -30,11 +30,11 @@ body {
 .new-game {
   border: solid 1px #ccc;
   border-radius: 4px;
-  background: #eee;
+  background: #baa;
   font-size: 20px;
   padding: 4px 8px;
   cursor: pointer;
-  color: #666;
+  color: #fff;
   font-weight: bold;
 }
 
