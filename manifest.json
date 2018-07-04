@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "2048 Reasons",
+  "name": "Damn Classic 2048 Game Implementation",
   "icons": [
     {
       "src": "favicon.ico",
