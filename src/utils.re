@@ -1,3 +1,5 @@
+[@bs.val] external environment : string = "process.env.NODE_ENV";
+
 [@bs.val]
 external request_animation_frame : (unit => unit) => int =
   "requestAnimationFrame";

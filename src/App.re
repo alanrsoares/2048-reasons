@@ -133,10 +133,17 @@ let make = (~randomSeed, _children) => {
           </h1>
         </header>
         <div className="controls">
-          <button
-            className="new-game" onClick=(self.handle(on_toggle_autoplay))>
-            (render_string(self.state.isPlaying ? "Stop" : "Play"))
-          </button>
+          (
+            switch (Utils.environment) {
+            | "development" =>
+              <button
+                className="new-game"
+                onClick=(self.handle(on_toggle_autoplay))>
+                (render_string(self.state.isPlaying ? "Stop" : "Auto"))
+              </button>
+            | _ => <span />
+            }
+          )
           <button
             className="new-game"
             onClick=(_ => self.send(Reset))
