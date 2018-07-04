@@ -20,10 +20,10 @@ let length_diff = (a, b) => List.(length(a) - length(b));
 
 let get_position = (p: position) => List.(nth(_, p.y) ||> nth(_, p.x));
 
-let push_zeroes = (xs: row) : row => {
+let shift_zeroes = (xs: row) : row => {
   let (non_zeroes, zeroes) = xs |> RList.partition(x => x !== 0);
 
-  non_zeroes @ zeroes;
+  zeroes @ non_zeroes;
 };
 
 let find_zeroes =
@@ -38,31 +38,33 @@ let find_zeroes =
     )
   );
 
-let get_columns = xs =>
-  xs |> List.(mapi(x => mapi((y, _) => get_position({x, y}, xs))));
+let get_columns = (xs: grid) =>
+  xs
+  |> List.(mapi(x => mapi((y, _) => get_position({x, y}, xs))));
 
-let fold_selfi = (f, xs) => xs |> RList.fold_lefti(f, xs);
+let merge_row_right = (xs: row) => {
+  let rec merge = (index: int, ys: row) =>
+    switch (ys) {
+    | [a, b, c, d] =>
+      switch (index) {
+      | 0 => merge(1, c === d ? [0, a, b, c + d] : ys)
+      | 1 => merge(2, b === c ? [0, a, b + c, d] : ys)
+      | 2 => merge(3, a === b ? [0, a + b, c, d] : ys)
+      | _ => ys
+      }
+    | _ => ys
+    };
 
-let swap_left = (x, i) => RList.(update(x, i - 1) ||> update(0, i));
+  xs |> shift_zeroes |> merge(0);
+};
 
-let merge_row_left =
-  push_zeroes
-  ||> fold_selfi((xs, i, x) =>
-        switch (i) {
-        | 0 => xs
-        | _ =>
-          let y = List.nth(xs, i - 1);
-          x !== y ? xs : xs |> swap_left(x + y, i) |> push_zeroes;
-        }
-      );
-
-let merge_row_right = List.(rev ||> merge_row_left ||> rev);
+let merge_row_left = List.rev ||> merge_row_right ||> List.rev;
 
 let merge_grid_right = List.map(merge_row_right);
 
 let merge_grid_left = List.map(merge_row_left);
 
-let merge = (direction: direction) =>
+let merge = (direction: direction) : (grid => grid) =>
   switch (direction) {
   | Right => merge_grid_right
   | Left => merge_grid_left
@@ -107,7 +109,7 @@ let fill_random_empty_tile = (random_seed: int) => {
 type result = {
   direction,
   score: int,
-  grid,
+  zeroes: int,
 };
 
 let get_score =
@@ -118,11 +120,30 @@ let get_score =
     )
   );
 
+let direction_to_string = direction =>
+  switch (direction) {
+  | Left => "left"
+  | Right => "right"
+  | Up => "up"
+  | Down => "down"
+  };
+
+let grid_to_matrix = grid => {
+  let matrix = Array.make_matrix(4, 4, 0);
+
+  grid |> List.iteri(y => List.iteri((x, tile) => matrix[y][x] = tile));
+
+  matrix;
+};
+
 let best_move = grid =>
   [Right, Up, Down, Left]
-  |> List.map(direction =>
-       {direction, grid, score: get_score(merge(direction, grid))}
-     )
+  |> List.map(direction => {
+       let grid' = merge(direction, grid);
+       let zeroes = find_zeroes(grid') |> List.length;
+       {direction, zeroes, score: get_score(grid')};
+     })
   |> List.sort((a, b) => b.score - a.score)
-  |> List.map(x => x.direction)
-  |> List.hd;
+  |> List.sort((a, b) => b.zeroes - a.zeroes)
+  |> List.hd
+  |> (x => x.direction);
