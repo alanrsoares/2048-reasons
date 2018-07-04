@@ -104,36 +104,25 @@ let fill_random_empty_tile = (random_seed: int) => {
   };
 };
 
-type stats = {
-  empty_tiles: int,
-  sum: int,
-};
-
 type result = {
   direction,
-  stats,
+  score: int,
+  grid,
 };
 
-let get_stats =
+let get_score =
   RList.(
     fold_lefti(
-      (acc, _) =>
-        fold_lefti(
-          (acc', _, tile) => {
-            empty_tiles: acc'.empty_tiles + (tile === 0 ? 1 : 0),
-            sum: acc'.sum + tile,
-          },
-          acc,
-        ),
-      {empty_tiles: 0, sum: 0},
+      (acc, _) => fold_lefti((acc', _, tile) => acc' + tile, acc),
+      0,
     )
   );
 
 let best_move = grid =>
   [Right, Up, Down, Left]
   |> List.map(direction =>
-       {direction, stats: get_stats(merge(direction, grid))}
+       {direction, grid, score: get_score(merge(direction, grid))}
      )
-  |> List.sort((a, b) => b.stats.sum - a.stats.sum)
+  |> List.sort((a, b) => b.score - a.score)
   |> List.map(x => x.direction)
   |> List.hd;
