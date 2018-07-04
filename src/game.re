@@ -108,6 +108,7 @@ let fill_random_empty_tile = (random_seed: int) => {
 
 type result = {
   direction,
+  grid,
   score: int,
   zeroes: int,
 };
@@ -141,9 +142,12 @@ let best_move = grid =>
   |> List.map(direction => {
        let grid' = merge(direction, grid);
        let zeroes = find_zeroes(grid') |> List.length;
-       {direction, zeroes, score: get_score(grid')};
+       {direction, zeroes, grid: grid', score: get_score(grid')};
      })
+  |> List.filter(x => x.grid != grid)
   |> List.sort((a, b) => b.score - a.score)
   |> List.sort((a, b) => b.zeroes - a.zeroes)
-  |> List.hd
-  |> (x => x.direction);
+  |> (xs => switch (List.length(xs)) {
+  | 0 => None
+  | _ => Some(xs |> List.hd |> (x => x.direction))
+  });

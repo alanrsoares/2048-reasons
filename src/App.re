@@ -1,9 +1,24 @@
 open Utils;
 
-type state = Game.grid;
+type game_status =
+  | New
+  | Playng
+  | AutoPlaying
+  | Lost
+  | Won;
+
+type state = {
+  grid: Game.grid,
+  game_status,
+  isPlaying: bool,
+  animationFrameId: ref(int),
+};
 
 type action =
   | Move(Game.direction)
+  | Tick
+  | Start
+  | Stop
   | Reset;
 
 let empty_grid: Game.grid = [
@@ -26,17 +41,23 @@ let make = (~randomSeed, _children) => {
     | "ArrowDown" => self.send(Move(Down))
     | "ArrowLeft" => self.send(Move(Left))
     | "ArrowRight" => self.send(Move(Right))
-    /* enables auto move */
-    /* | "q" =>
-       let direction = Game.best_move(self.state);
-
-       Js.log2(
-         direction |> Game.direction_to_string,
-         self.state |> Game.grid_to_matrix,
-       );
-
-       self.send(Move(direction)); */
+    | "q" => self.send(Tick)
     | _ => ()
+    };
+  };
+
+  let on_toggle_autoplay = (_, self: self) => {
+    let rec play = () => {
+      self.state.animationFrameId := request_animation_frame(play);
+
+      self.send(Tick);
+    };
+    if (self.state.isPlaying) {
+      cancel_animation_frame(self.state.animationFrameId^);
+      self.send(Stop);
+    } else {
+      play();
+      self.send(Start);
     };
   };
 
@@ -48,8 +69,12 @@ let make = (~randomSeed, _children) => {
     | Some(new_grid) => new_grid
     };
 
-  let make_initial_state = () =>
-    empty_grid |> maybe_place_value |> maybe_place_value;
+  let make_initial_state = () => {
+    grid: empty_grid |> maybe_place_value |> maybe_place_value,
+    game_status: New,
+    animationFrameId: ref(0),
+    isPlaying: false,
+  };
 
   {
     ...component,
@@ -57,16 +82,37 @@ let make = (~randomSeed, _children) => {
     reducer: (action, state) =>
       switch (action) {
       | Move(direction) =>
-        let new_grid = Game.merge(direction, state);
+        let new_grid = Game.merge(direction, state.grid);
 
-        if (new_grid == state) {
+        if (new_grid == state.grid) {
           ReasonReact.NoUpdate;
         } else {
           switch (new_grid |> place_random_value) {
-          | Some(new_grid') => ReasonReact.Update(new_grid')
+          | Some(new_grid') =>
+            ReasonReact.Update({...state, grid: new_grid'})
           | None => ReasonReact.NoUpdate /* GAME_OVER! */
           };
         };
+      | Tick =>
+        let direction = Game.best_move(state.grid);
+
+        switch (direction) {
+        | None => ReasonReact.NoUpdate
+        | Some(direction') =>
+          let new_grid = Game.merge(direction', state.grid);
+
+          if (new_grid == state.grid) {
+            ReasonReact.NoUpdate;
+          } else {
+            switch (new_grid |> place_random_value) {
+            | Some(new_grid') =>
+              ReasonReact.Update({...state, grid: new_grid'})
+            | None => ReasonReact.NoUpdate /* GAME_OVER! */
+            };
+          };
+        };
+      | Start => ReasonReact.Update({...state, isPlaying: true})
+      | Stop => ReasonReact.Update({...state, isPlaying: false})
       | Reset => ReasonReact.Update(make_initial_state())
       },
     didMount: self => {
@@ -89,6 +135,10 @@ let make = (~randomSeed, _children) => {
         </header>
         <div className="controls">
           <button
+            className="new-game" onClick=(self.handle(on_toggle_autoplay))>
+            (render_string(self.state.isPlaying ? "Stop" : "Play"))
+          </button>
+          <button
             className="new-game"
             onClick=(_ => self.send(Reset))
             onTouchEnd=(_ => self.send(Reset))>
@@ -96,7 +146,7 @@ let make = (~randomSeed, _children) => {
           </button>
         </div>
         <SwipeZone onSwipe=(direction => self.send(Move(direction)))>
-          <Grid data=self.state />
+          <Grid data=self.state.grid />
         </SwipeZone>
         <section className="hint">
           (render_string({js|use ←, ↑, → and ↓ to play|js}))
