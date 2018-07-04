@@ -82,7 +82,7 @@ let make = (~randomSeed, _children) => {
             className="new-game"
             onClick=(_ => self.send(Reset))
             onTouchEnd=(_ => self.send(Reset))>
-            (render_string("new game"))
+            (render_string("New Game"))
           </button>
         </div>
         <SwipeZone onSwipe=(direction => self.send(Move(direction)))>
