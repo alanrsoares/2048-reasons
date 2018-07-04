@@ -16,35 +16,34 @@ type direction =
   | Up
   | Down;
 
-let length_diff = (a, b) => List.length(a) - List.length(b);
+let length_diff = (a, b) => List.(length(a) - length(b));
 
-let maybe_reverse = (reverse: bool, xs: row) => reverse ? List.rev(xs) : xs;
-
-let get_position = (p: position) => List.nth(_, p.y) ||> List.nth(_, p.x);
+let get_position = (p: position) => List.(nth(_, p.y) ||> nth(_, p.x));
 
 let push_zeroes = (xs: row) : row => {
-  let filtered = xs |> List.filter(x => x !== 0);
-  let pad = length_diff(xs, filtered) |> Array.make(_, 0) |> Array.to_list;
+  let (non_zeroes, zeroes) = xs |> RList.partition(x => x !== 0);
 
-  filtered @ pad;
+  non_zeroes @ zeroes;
 };
 
 let find_zeroes =
-  RList.fold_lefti(
-    (acc, y) =>
-      RList.fold_lefti(
-        (acc', x, tile) => tile === 0 ? acc' @ [{y, x}] : acc',
-        acc,
-      ),
-    [],
+  RList.(
+    fold_lefti(
+      (acc, y) =>
+        fold_lefti(
+          (acc', x, tile) => tile === 0 ? acc' @ [{y, x}] : acc',
+          acc,
+        ),
+      [],
+    )
   );
 
-let get_columns = (xs: grid) =>
+let get_columns = xs =>
   xs |> List.(mapi(x => mapi((y, _) => get_position({x, y}, xs))));
 
-let swap_left = (x, i) => RList.update(x, i - 1) ||> RList.update(0, i);
-
 let fold_selfi = (f, xs) => xs |> RList.fold_lefti(f, xs);
+
+let swap_left = (x, i) => RList.(update(x, i - 1) ||> update(0, i));
 
 let merge_row_left =
   push_zeroes
@@ -57,7 +56,7 @@ let merge_row_left =
         }
       );
 
-let merge_row_right = List.rev ||> merge_row_left ||> List.rev;
+let merge_row_right = List.(rev ||> merge_row_left ||> rev);
 
 let merge_grid_right = List.map(merge_row_right);
 
