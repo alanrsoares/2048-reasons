@@ -26,6 +26,16 @@ let make = (~randomSeed, _children) => {
     | "ArrowDown" => self.send(Move(Down))
     | "ArrowLeft" => self.send(Move(Left))
     | "ArrowRight" => self.send(Move(Right))
+    /* enables auto move */
+    /* | "q" =>
+       let direction = Game.best_move(self.state);
+
+       Js.log2(
+         direction |> Game.direction_to_string,
+         self.state |> Game.grid_to_matrix,
+       );
+
+       self.send(Move(direction)); */
     | _ => ()
     };
   };
