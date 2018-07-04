@@ -1,10 +1,10 @@
 {
     "short_name": "2048 Reasons",
-    "name": "Damn Classic 2048 Game Implementation",
+    "name": "Damn Classic 2048",
     "start_url": "./index.html",
     "display": "standalone",
-    "theme_color": "#000000",
-    "background_color": "#ffffff",
+    "theme_color": "white",
+    "background_color": "#db4d3f",
     "icons": [
         {
             "src": "favicon.ico",
