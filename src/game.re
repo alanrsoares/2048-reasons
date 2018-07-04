@@ -145,8 +145,8 @@ let best_move = grid =>
        {direction, zeroes, grid: grid', score: get_score(grid')};
      })
   |> List.filter(x => x.grid != grid)
-  |> List.sort((a, b) => b.score - a.score)
   |> List.sort((a, b) => b.zeroes - a.zeroes)
+  |> List.sort((a, b) => b.score - a.score)
   |> (xs => switch (List.length(xs)) {
   | 0 => None
   | _ => Some(xs |> List.hd |> (x => x.direction))

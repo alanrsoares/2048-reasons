@@ -49,7 +49,6 @@ let make = (~randomSeed, _children) => {
   let on_toggle_autoplay = (_, self: self) => {
     let rec play = () => {
       self.state.animationFrameId := request_animation_frame(play);
-
       self.send(Tick);
     };
     if (self.state.isPlaying) {
