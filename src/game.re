@@ -22,11 +22,11 @@ let maybe_reverse = (reverse: bool, xs: row) => reverse ? List.rev(xs) : xs;
 
 let get_position = (p: position) => List.nth(_, p.y) ||> List.nth(_, p.x);
 
-let shift_zeroes = (xs: row) : row => {
+let push_zeroes = (xs: row) : row => {
   let filtered = xs |> List.filter(x => x !== 0);
   let pad = length_diff(xs, filtered) |> Array.make(_, 0) |> Array.to_list;
 
-  pad @ filtered;
+  filtered @ pad;
 };
 
 let find_zeroes =
@@ -39,38 +39,36 @@ let find_zeroes =
     [],
   );
 
-let get_cols = (reverse: bool, xs: grid) =>
-  xs
-  |> List.(mapi(x => mapi((y, _) => get_position({x, y}, xs))))
-  |> List.map(maybe_reverse(reverse));
+let get_columns = (xs: grid) =>
+  xs |> List.(mapi(x => mapi((y, _) => get_position({x, y}, xs))));
 
-let get_rows = (reverse: bool, xs: grid) =>
-  xs |> List.map(maybe_reverse(reverse));
+let swap_left = (x, i) => RList.update(x, i - 1) ||> RList.update(0, i);
 
-let merge_row = (xs: row) => {
-  let rec merge = (index: int, ys: row) =>
-    switch (ys) {
-    | [a, b, c, d] =>
-      switch (index) {
-      | 0 => merge(1, c === d ? [0, a, b, c + d] : ys)
-      | 1 => merge(2, b === c ? [0, a, b + c, d] : ys)
-      | 2 => merge(3, a === b ? [0, a + b, c, d] : ys)
-      | _ => ys
-      }
-    | _ => ys
-    };
+let fold_selfi = (f, xs) => xs |> RList.fold_lefti(f, xs);
 
-  xs |> shift_zeroes |> merge(0);
-};
+let merge_row_left =
+  push_zeroes
+  ||> fold_selfi((xs, i, x) =>
+        switch (i) {
+        | 0 => xs
+        | _ =>
+          let y = List.nth(xs, i - 1);
+          x !== y ? xs : xs |> swap_left(x + y, i) |> push_zeroes;
+        }
+      );
 
-let merge_grid = List.map(merge_row);
+let merge_row_right = List.rev ||> merge_row_left ||> List.rev;
 
-let merge = (direction: direction) : (grid => grid) =>
+let merge_grid_right = List.map(merge_row_right);
+
+let merge_grid_left = List.map(merge_row_left);
+
+let merge = (direction: direction) =>
   switch (direction) {
-  | Right => merge_grid
-  | Left => get_rows(true) ||> merge_grid ||> get_rows(true)
-  | Up => get_cols(true) ||> merge_grid ||> get_cols(false) ||> List.rev
-  | Down => get_cols(false) ||> merge_grid ||> get_cols(false)
+  | Right => merge_grid_right
+  | Left => merge_grid_left
+  | Up => get_columns ||> merge_grid_left ||> get_columns
+  | Down => get_columns ||> merge_grid_right ||> get_columns
   };
 
 let update_grid = (value: int, zero: position, grid: grid) => {

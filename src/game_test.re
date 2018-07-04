@@ -1,11 +1,11 @@
 open Jest;
 open Expect;
 
-test("shift_zeroes", () => {
+test("push_zeroes", () => {
   let original = [0, 1, 1, 0];
-  let expected = [0, 0, 1, 1];
+  let expected = [1, 1, 0, 0];
 
-  expect(Game.shift_zeroes(original)) |> toEqual(expected);
+  expect(Game.push_zeroes(original)) |> toEqual(expected);
 });
 
 test("find_zeroes", () => {
@@ -15,46 +15,25 @@ test("find_zeroes", () => {
   expect(Game.find_zeroes(original)) |> toEqual(expected);
 });
 
-test("merge_row", () => {
+test("merge_row_right", () => {
   let original = [0, 1, 1, 0];
   let expected = [0, 0, 0, 2];
 
-  expect(Game.merge_row(original)) |> toEqual(expected);
+  expect(Game.merge_row_right(original)) |> toEqual(expected);
 });
 
-test("get_cols", () => {
+test("merge_row_left", () => {
+  let original = [2, 0, 2, 0];
+  let expected = [4, 0, 0, 0];
+
+  expect(Game.merge_row_left(original)) |> toEqual(expected);
+});
+
+test("get_columns", () => {
   let original = [[0, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]];
   let expected = [[0, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
 
-  expect(Game.get_cols(false, original)) |> toEqual(expected);
-});
-
-test("get_cols:reverse", () => {
-  let original = [[0, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]];
-  let expected = [[1, 1, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
-
-  expect(Game.get_cols(true, original)) |> toEqual(expected);
-});
-
-test("get_rows", () => {
-  let original = [[0, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]];
-  let expected = [[0, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]];
-
-  expect(Game.get_rows(false, original)) |> toEqual(expected);
-});
-
-test("get_rows:reverse", () => {
-  let original = [[0, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]];
-  let expected = [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1]];
-
-  expect(Game.get_rows(true, original)) |> toEqual(expected);
-});
-
-test("merge_grid", () => {
-  let original = [[2, 0, 4, 0], [1, 0, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
-  let expected = [[0, 0, 2, 4], [0, 0, 0, 2], [0, 0, 0, 0], [0, 0, 0, 0]];
-
-  expect(Game.merge_grid(original)) |> toEqual(expected);
+  expect(Game.get_columns(original)) |> toEqual(expected);
 });
 
 test("merge:Right", () => {
