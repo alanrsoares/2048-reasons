@@ -12,7 +12,7 @@ type touchRecorder = {
 };
 
 let get_touch_position = touches : touchEvent => {
-  let touch = TouchList.first(touches);
+  let touch = touches |> TouchList.hd;
 
   {x: touch##screenX, y: touch##screenY, timestamp: Js.Date.now()};
 };

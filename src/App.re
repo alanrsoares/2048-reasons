@@ -11,7 +11,7 @@ type state = {
   grid: Game.grid,
   game_status,
   isPlaying: bool,
-  animationFrameId: ref(int),
+  animationFrameId: ref(option(Webapi.rafId)),
 };
 
 type action =
@@ -33,10 +33,8 @@ let component = ReasonReact.reducerComponent("App");
 type self = ReasonReact.self(state, ReasonReact.noRetainedProps, action);
 
 let make = (~randomSeed, _children) => {
-  let on_keyup = (event, self: self) => {
-    let key = event |> ReactEventRe.Keyboard.key;
-
-    switch (key) {
+  let on_keyup = (event, self: self) => 
+    switch (event |> Webapi.Dom.KeyboardEvent.key) {
     | "ArrowUp" => self.send(Move(Up))
     | "ArrowDown" => self.send(Move(Down))
     | "ArrowLeft" => self.send(Move(Left))
@@ -44,19 +42,23 @@ let make = (~randomSeed, _children) => {
     | "q" => self.send(Tick)
     | _ => ()
     };
-  };
+  
 
   let on_toggle_autoplay = (_, self: self) => {
-    let rec play = () => {
-      self.state.animationFrameId := request_animation_frame(play);
+    let rec play = (_) => {
+      self.state.animationFrameId := Some(Webapi.requestCancellableAnimationFrame(play));
       self.send(Tick);
     };
-    if (self.state.isPlaying) {
-      cancel_animation_frame(self.state.animationFrameId^);
-      self.send(Stop);
-    } else {
-      play();
+
+    switch (self.state.animationFrameId^) {
+    | None => {
+      play(0.);
       self.send(Start);
+    }
+    | Some(rafId) => {
+      Webapi.cancelAnimationFrame(rafId);
+      self.send(Stop);
+    }
     };
   };
 
@@ -71,7 +73,7 @@ let make = (~randomSeed, _children) => {
   let make_initial_state = () => {
     grid: empty_grid |> maybe_place_value |> maybe_place_value,
     game_status: New,
-    animationFrameId: ref(0),
+    animationFrameId: ref(None),
     isPlaying: false,
   };
 
@@ -111,15 +113,17 @@ let make = (~randomSeed, _children) => {
           };
         };
       | Start => ReasonReact.Update({...state, isPlaying: true})
-      | Stop => ReasonReact.Update({...state, isPlaying: false})
+      | Stop => ReasonReact.Update({...state, isPlaying: false, animationFrameId: ref(None)})
       | Reset => ReasonReact.Update(make_initial_state())
       },
     didMount: self => {
       let handler = self.handle(on_keyup);
-      let event = "keyup";
 
-      add_keyboard_event_listener(event, handler);
-      self.onUnmount(() => remove_keyboard_event_listener(event, handler));
+      Webapi.Dom.(Document.addKeyUpEventListener(handler, document));
+
+      self.onUnmount(() =>
+        Webapi.Dom.(Document.removeKeyUpEventListener(handler, document))
+      );
     },
     render: self =>
       <div>
@@ -134,7 +138,7 @@ let make = (~randomSeed, _children) => {
         </header>
         <div className="controls">
           (
-            switch (Utils.environment) {
+            switch (Env.node_env) {
             | "development" =>
               <button
                 className="new-game"

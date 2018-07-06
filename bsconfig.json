@@ -1,19 +1,16 @@
 {
   "name": "reason-scripts",
-  "sources": [
-    "src"
-  ],
+  "sources": ["src"],
   "bs-dependencies": [
     "reason-react",
     "@glennsl/bs-jest",
-    "rationale"
+    "rationale",
+    "bs-webapi"
   ],
   "reason": {
     "react-jsx": 2
   },
-  "bsc-flags": [
-    "-bs-super-errors"
-  ],
+  "bsc-flags": ["-bs-super-errors"],
   "refmt": 3,
   "package-specs": {
     "module": "commonjs",
