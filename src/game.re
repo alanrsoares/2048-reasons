@@ -152,12 +152,11 @@ let get_valid_moves = grid =>
      })
   |> List.filter(x => x.grid != grid);
 
-let best_move = grid =>
-  grid
-  |> get_valid_moves
-  |> List.sort((a, b) => b.zeroes - a.zeroes)
-  |> List.sort((a, b) => b.score - a.score)
-  |> (
+let best_move =
+  get_valid_moves
+  ||> List.sort((a, b) => b.zeroes - a.zeroes)  /* more merges first */
+  ||> List.sort((a, b) => b.score - a.score)  /* biggest score first */
+  ||> (
     moves =>
       switch (List.length(moves)) {
       | 0 => None
@@ -165,10 +164,9 @@ let best_move = grid =>
       }
   );
 
-let is_mergeable = grid =>
-  grid
-  |> get_valid_moves
-  |> (
+let is_mergeable =
+  get_valid_moves
+  ||> (
     moves =>
       switch (List.length(moves)) {
       | 0 => false
