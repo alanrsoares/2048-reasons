@@ -19,7 +19,21 @@ let render_rows =
   )
   ||> render_list;
 
-let make = (~data: Game.grid, _children) => {
+let make = (~data: Game.grid, ~status: Game.status, _children) => {
   ...component,
-  render: _self => <div className="Grid"> (data |> render_rows) </div>,
+  render: _self =>
+    <div className="Grid-container">
+      <div className="Grid"> (data |> render_rows) </div>
+      (
+        switch (status) {
+        | Lost =>
+          <div className="Grid-overlay">
+            <div className="Grid-overlay-message">
+              (render_string("game over"))
+            </div>
+          </div>
+        | _ => <span />
+        }
+      )
+    </div>,
 };

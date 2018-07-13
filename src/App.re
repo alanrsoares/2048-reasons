@@ -1,15 +1,8 @@
 open Utils;
 
-type game_status =
-  | New
-  | Playng
-  | AutoPlaying
-  | Lost
-  | Won;
-
 type state = {
   grid: Game.grid,
-  game_status,
+  gameStatus: Game.status,
   isPlaying: bool,
   animationFrameId: ref(option(Webapi.rafId)),
 };
@@ -18,7 +11,7 @@ type action =
   | Move(Game.direction)
   | Tick
   | Start
-  | Stop
+  | Stop(Webapi.rafId)
   | Reset;
 
 let empty_grid: Game.grid = [
@@ -33,7 +26,7 @@ let component = ReasonReact.reducerComponent("App");
 type self = ReasonReact.self(state, ReasonReact.noRetainedProps, action);
 
 let make = (~randomSeed, _children) => {
-  let on_keyup = (event, self: self) => 
+  let on_keyup = (event, self: self) =>
     switch (event |> Webapi.Dom.KeyboardEvent.key) {
     | "ArrowUp" => self.send(Move(Up))
     | "ArrowDown" => self.send(Move(Down))
@@ -42,23 +35,19 @@ let make = (~randomSeed, _children) => {
     | "q" => self.send(Tick)
     | _ => ()
     };
-  
 
   let on_toggle_autoplay = (_, self: self) => {
-    let rec play = (_) => {
-      self.state.animationFrameId := Some(Webapi.requestCancellableAnimationFrame(play));
+    let rec play = _ => {
+      self.state.animationFrameId :=
+        Some(Webapi.requestCancellableAnimationFrame(play));
       self.send(Tick);
     };
 
     switch (self.state.animationFrameId^) {
-    | None => {
+    | None =>
       play(0.);
       self.send(Start);
-    }
-    | Some(rafId) => {
-      Webapi.cancelAnimationFrame(rafId);
-      self.send(Stop);
-    }
+    | Some(rafId) => self.send(Stop(rafId))
     };
   };
 
@@ -72,7 +61,7 @@ let make = (~randomSeed, _children) => {
 
   let make_initial_state = () => {
     grid: empty_grid |> maybe_place_value |> maybe_place_value,
-    game_status: New,
+    gameStatus: New,
     animationFrameId: ref(None),
     isPlaying: false,
   };
@@ -86,34 +75,44 @@ let make = (~randomSeed, _children) => {
         let new_grid = Game.merge(direction, state.grid);
 
         if (new_grid == state.grid) {
-          ReasonReact.NoUpdate;
+          Game.is_mergeable(new_grid) ?
+            ReasonReact.NoUpdate :
+            ReasonReact.Update({...state, gameStatus: Lost});
         } else {
           switch (new_grid |> place_random_value) {
           | Some(new_grid') =>
             ReasonReact.Update({...state, grid: new_grid'})
-          | None => ReasonReact.NoUpdate /* GAME_OVER! */
+          | None => ReasonReact.Update({...state, gameStatus: Lost})
           };
         };
       | Tick =>
         let direction = Game.best_move(state.grid);
 
         switch (direction) {
-        | None => ReasonReact.NoUpdate
+        | None =>
+          switch (state.animationFrameId^) {
+          | None =>
+            ReasonReact.Update({...state, gameStatus: Lost, isPlaying: false})
+          | Some(rafId) =>
+            Webapi.cancelAnimationFrame(rafId);
+            ReasonReact.Update({
+              ...state,
+              gameStatus: Lost,
+              isPlaying: false,
+            });
+          }
         | Some(direction') =>
-          let new_grid = Game.merge(direction', state.grid);
-
-          if (new_grid == state.grid) {
-            ReasonReact.NoUpdate;
-          } else {
-            switch (new_grid |> place_random_value) {
-            | Some(new_grid') =>
-              ReasonReact.Update({...state, grid: new_grid'})
-            | None => ReasonReact.NoUpdate /* GAME_OVER! */
-            };
-          };
+          ReasonReact.SideEffects((self => self.send(Move(direction'))))
         };
       | Start => ReasonReact.Update({...state, isPlaying: true})
-      | Stop => ReasonReact.Update({...state, isPlaying: false, animationFrameId: ref(None)})
+      | Stop(rafId) =>
+        Webapi.cancelAnimationFrame(rafId);
+
+        ReasonReact.Update({
+          ...state,
+          isPlaying: false,
+          animationFrameId: ref(None),
+        });
       | Reset => ReasonReact.Update(make_initial_state())
       },
     didMount: self => {
@@ -156,7 +155,7 @@ let make = (~randomSeed, _children) => {
           </button>
         </div>
         <SwipeZone onSwipe=(direction => self.send(Move(direction)))>
-          <Grid data=self.state.grid />
+          <Grid data=self.state.grid status=self.state.gameStatus />
         </SwipeZone>
         <section className="hint">
           (render_string({js|use ←, ↑, → and ↓ to play|js}))

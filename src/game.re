@@ -1,6 +1,13 @@
 open Rationale;
 open Rationale.Function.Infix;
 
+type status =
+  | New
+  | Playng
+  | AutoPlaying
+  | Lost
+  | Won;
+
 type row = list(int);
 
 type grid = list(row);
@@ -39,8 +46,7 @@ let find_zeroes =
   );
 
 let get_columns = (xs: grid) =>
-  xs
-  |> List.(mapi(x => mapi((y, _) => get_position({x, y}, xs))));
+  xs |> List.(mapi(x => mapi((y, _) => get_position({x, y}, xs))));
 
 let merge_row_right = (xs: row) => {
   let rec merge = (index: int, ys: row) =>
@@ -137,17 +143,35 @@ let grid_to_matrix = grid => {
   matrix;
 };
 
-let best_move = grid =>
+let get_valid_moves = grid =>
   [Right, Up, Down, Left]
   |> List.map(direction => {
        let grid' = merge(direction, grid);
        let zeroes = find_zeroes(grid') |> List.length;
        {direction, zeroes, grid: grid', score: get_score(grid')};
      })
-  |> List.filter(x => x.grid != grid)
+  |> List.filter(x => x.grid != grid);
+
+let best_move = grid =>
+  grid
+  |> get_valid_moves
   |> List.sort((a, b) => b.zeroes - a.zeroes)
   |> List.sort((a, b) => b.score - a.score)
-  |> (xs => switch (List.length(xs)) {
-  | 0 => None
-  | _ => Some(xs |> List.hd |> (x => x.direction))
-  });
+  |> (
+    moves =>
+      switch (List.length(moves)) {
+      | 0 => None
+      | _ => Some(moves |> List.hd |> (x => x.direction))
+      }
+  );
+
+let is_mergeable = grid =>
+  grid
+  |> get_valid_moves
+  |> (
+    moves =>
+      switch (List.length(moves)) {
+      | 0 => false
+      | _ => true
+      }
+  );

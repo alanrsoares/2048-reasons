@@ -1,10 +1,37 @@
 .Grid {
   padding: 5px;
-  margin: 10px;
   background: #baa;
   width: 338px;
   margin: auto;
   border-radius: 7px;
+}
+
+.Grid-container {
+  width: 338px;
+  margin: 10px auto;
+  position: relative;
+}
+
+.Grid-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #ccc;
+  opacity: 0.8;
+  width: 348px;
+  height: 348px;
+  border-radius: 7px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 40px;
+}
+
+.Grid-overlay-message {
+  opacity: 1;
+  color: tomato;
+  font-size: 40px;
 }
 
 .Grid-row {
