@@ -1,27 +1,32 @@
 body {
   background-color: white;
-  overscroll-behavior: none; }
+  overscroll-behavior: none;
+}
 
 * {
-  font-family: Arial, Helvetica, sans-serif; }
+  font-family: Arial, Helvetica, sans-serif;
+}
 
 .heading {
   text-align: center;
   color: #666;
-  font-size: 40px; }
+  font-size: 40px;
+}
 
 .re {
   background: #db4d3f;
   color: white;
   font-size: 40px;
   padding: 20px 2px 0 10px;
-  margin-right: 1px; }
+  margin-right: 1px;
+}
 
 .controls {
   width: 340px;
   margin: auto;
   margin-bottom: 10px;
-  text-align: right; }
+  text-align: right;
+}
 
 .new-game {
   border: solid 1px #ccc;
@@ -31,10 +36,12 @@ body {
   padding: 4px 8px;
   cursor: pointer;
   color: #fff;
-  font-weight: bold; }
+  font-weight: bold;
+}
 
 .hint {
   margin-top: 10px;
   text-align: center;
   color: #999;
-  font-weight: bold; }
+  font-weight: bold;
+}
