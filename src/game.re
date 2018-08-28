@@ -94,13 +94,10 @@ let fill_random_empty_tile = (random_seed: int) => {
       | [] => None
       | [first_position] => Some(first_position)
       | empty_tiles =>
-        let safe_index =
-          switch (empty_tiles |> List.length |> Random.int) {
-          | 0 => 0
-          | i => i - 1
-          };
-
-        Some(List.nth(empty_tiles, safe_index));
+        switch (empty_tiles |> List.length |> Random.int) {
+        | 0 => Some(List.hd(empty_tiles))
+        | i => Some(List.nth(empty_tiles, i - 1))
+        }
       };
 
     switch (position) {
