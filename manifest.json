@@ -3,6 +3,7 @@
   "name": "Damn Classic 2048",
   "start_url": "./index.html",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "theme_color": "white",
   "background_color": "#db4d3f",
   "icons": [
