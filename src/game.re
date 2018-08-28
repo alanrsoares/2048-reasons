@@ -166,9 +166,10 @@ let best_move =
 
 let is_mergeable =
   get_valid_moves
+  ||> List.length
   ||> (
-    moves =>
-      switch (List.length(moves)) {
+    len =>
+      switch (len) {
       | 0 => false
       | _ => true
       }
