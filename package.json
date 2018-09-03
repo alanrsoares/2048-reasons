@@ -9,7 +9,7 @@
     "rationale": "^0.1.4",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
-    "reason-scripts": "0.9.0"
+    "reason-scripts": "1.0.0-beta4"
   },
   "scripts": {
     "build-css": "node-sass-chokidar src/ -o src/",
