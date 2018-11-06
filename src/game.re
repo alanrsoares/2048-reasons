@@ -56,6 +56,9 @@ let merge_row_right = (xs: row) => {
       | 0 when c === d => merge(1, [0, a, b, c * 2])
       | 1 when b === c => merge(2, [0, a, b * 2, d])
       | 2 when a === b => merge(3, [0, a * 2, c, d])
+      | 0
+      | 1
+      | 2 => merge(index + 1, ys)
       | _ => ys
       }
     | _ => ys
