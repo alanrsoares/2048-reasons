@@ -187,7 +187,7 @@ let make = () => {
       <header className="w-full flex flex-col gap-4">
         /* Row 1: Title & Score Badges */
         <div className="flex items-start justify-between w-full">
-          /* 2048 Title Container with Label Right-Edge Aligned */
+          /* 2048 Title Container with Official ReScript Brandmark Badge */
           <div className="relative inline-block">
             <h1
               className="text-6xl sm:text-7xl font-black tracking-tight text-[#776e65] leading-none"
@@ -195,9 +195,23 @@ let make = () => {
               {Utils.renderString("2048")}
             </h1>
             <span
-              className="absolute bottom-0 right-0 translate-y-3/4 px-1.5 py-0.5 rounded bg-[#edc22e] text-white font-extrabold text-[9px] sm:text-[10px] tracking-wider uppercase whitespace-nowrap shadow-xs"
+              className="absolute bottom-0 right-0 translate-y-3/4 flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#edc22e] text-white font-black text-[9px] sm:text-[10px] tracking-wider uppercase whitespace-nowrap shadow-xs"
             >
-              {Utils.renderString("RESCRIPT V12")}
+              <svg className="w-3 h-3 rounded-2xs" viewBox="0 0 250 250" fill="none">
+                <path
+                  fill="#fff"
+                  d="M0 80.086C0 46.72 0 30.044 8.496 18.342a44.557 44.557 0 0 1 9.846-9.847C30.032 0 46.719 0 80.082 0h89.83c33.368 0 50.042 0 61.745 8.495a44.452 44.452 0 0 1 9.841 9.847c8.5 11.695 8.5 28.377 8.5 61.744v89.828c0 33.367 0 50.042-8.5 61.744a44.32 44.32 0 0 1-9.841 9.841C219.961 250 203.28 250 169.912 250h-89.83c-33.363 0-50.043 0-61.74-8.501a44.428 44.428 0 0 1-9.846-9.841C0 219.963 0 203.281 0 169.914V80.086Z"
+                />
+                <path
+                  fill="#edc22e"
+                  d="M169.41 121.016c16.393 0 29.683-13.29 29.683-29.683s-13.29-29.682-29.683-29.682-29.682 13.29-29.682 29.682c0 16.393 13.289 29.683 29.682 29.683Z"
+                />
+                <path
+                  fill="#edc22e"
+                  d="M65.318 87.582c0-9.422 0-14.135 1.84-17.74a16.802 16.802 0 0 1 7.355-7.364c3.6-1.831 8.313-1.831 17.74-1.831h23.564v109.398c0 7.842 0 11.765-1.282 14.854a16.823 16.823 0 0 1-9.11 9.108c-3.091 1.282-7.014 1.282-14.853 1.282-7.842 0-11.765 0-14.854-1.282a16.817 16.817 0 0 1-9.11-9.108c-1.282-3.091-1.282-7.014-1.282-14.854l-.008-82.463Z"
+                />
+              </svg>
+              <span> {Utils.renderString("v12")} </span>
             </span>
           </div>
 
@@ -258,7 +272,7 @@ let make = () => {
           />
           <path
             fill="#fff"
-            d="M169.41 121.016c16.393 0 29.683-13.29 29.683-29.683s-13.29-29.682-29.683-29.682-29.682 13.29-29.682 29.682c0 16.393 13.289 29.683 29.682 29.683Z"
+            d="M169.41 121.016c16.393 0 29.683-13.29 29.683-29.683s-13.29-29.682-29.683-29.682-29.682 13.29-29.682 29.682c0 16.393 13.289 29.683 29.683 29.683Z"
           />
           <path
             fill="#fff"
