@@ -4,11 +4,14 @@
     {
       "dir": "src",
       "subdirs": true
+    },
+    {
+      "dir": "scripts",
+      "subdirs": true
     }
   ],
   "package-specs": {
-    "module": "esmodule",
-    "in-source": true
+    "module": "esmodule"
   },
   "suffix": ".res.js",
   "jsx": {
