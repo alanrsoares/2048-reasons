@@ -1,4 +1,4 @@
-// Game.res - 2048 Core Engine with Persistent Tile Transitions in ReScript v12
+// Game.res - 2048 Core Engine with Corner-Monotonic Solver Strategy in ReScript v12
 
 type status =
   | New
@@ -211,35 +211,62 @@ let isMergeable = (tiles: array<tile>): bool => {
   }
 }
 
+/* Snake Weight Matrix anchoring highest values towards bottom-right [3, 3] */
+let snakeWeightMatrix = [
+  [1, 2, 4, 8],
+  [128, 64, 32, 16],
+  [256, 512, 1024, 2048],
+  [32768, 16384, 8192, 4096],
+]
+
+let evaluateGrid = (tiles: array<tile>): float => {
+  let matrix = tilesToMatrix(tiles)
+  let score = ref(0.0)
+  let emptyCount = findEmptySlots(tiles)->Array.length
+
+  for r in 0 to 3 {
+    for c in 0 to 3 {
+      switch matrix[r] {
+      | Some(row) =>
+        switch row[c] {
+        | Some(val) =>
+          if val > 0 {
+            switch snakeWeightMatrix[r] {
+            | Some(wRow) =>
+              switch wRow[c] {
+              | Some(w) => score := score.contents +. Int.toFloat(val * w)
+              | None => ()
+              }
+            | None => ()
+            }
+          }
+        | None => ()
+        }
+      | None => ()
+      }
+    }
+  }
+
+  let emptyBonus = Int.toFloat(emptyCount * 5000)
+  score.contents +. emptyBonus
+}
+
+/* Corner-Monotonic Expectimax Solver Strategy */
 let bestMove = (tiles: array<tile>): option<direction> => {
-  let directions = [Right, Up, Down, Left]
-  let validMoves = []
+  let directions = [Down, Right, Left, Up]
+  let bestDir = ref(None)
+  let maxEval = ref(-1.0)
 
   directions->Array.forEach(dir => {
     let res = moveGrid(tiles, dir, 999999)
     if res.moved {
-      let emptyCount = findEmptySlots(res.tiles)->Array.length
-      let _ = validMoves->Array.push((dir, res.scoreGained, emptyCount))
+      let evalScore = evaluateGrid(res.tiles) +. Int.toFloat(res.scoreGained * 10)
+      if evalScore > maxEval.contents {
+        maxEval := evalScore
+        bestDir := Some(dir)
+      }
     }
   })
 
-  if validMoves->Array.length == 0 {
-    None
-  } else {
-    validMoves->Array.sort((a, b) => {
-      let (_, scoreA, emptyA) = a
-      let (_, scoreB, emptyB) = b
-      let scoreDiff = scoreB - scoreA
-      if scoreDiff != 0 {
-        Int.toFloat(scoreDiff)
-      } else {
-        Int.toFloat(emptyB - emptyA)
-      }
-    })
-
-    switch validMoves[0] {
-    | Some((dir, _, _)) => Some(dir)
-    | None => None
-    }
-  }
+  bestDir.contents
 }
