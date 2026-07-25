@@ -1,0 +1,14 @@
+# Build & Compiler artifacts
+*.res.js
+.rescript
+lib/
+dist/
+
+# Dependencies
+node_modules/
+bun.lock
+
+# IDE & OS
+.DS_Store
+.vscode/
+.idea/
