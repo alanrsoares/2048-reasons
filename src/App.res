@@ -186,13 +186,13 @@ let make = () => {
       /* Header Section */
       <header className="w-full flex flex-col gap-4">
         /* Row 1: Title & Score Badges */
-        <div className="flex items-start justify-between w-full">
-          /* 2048 Title with Inline 1em ReScript Brandmark Logo */
+        <div className="flex items-center justify-between w-full">
+          /* 2048 Title with Inline ReScript Brandmark Logo */
           <h1
-            className="text-6xl sm:text-7xl font-black tracking-tight text-[#776e65] leading-none flex items-center gap-2.5"
+            className="text-5xl sm:text-6xl font-black tracking-tight text-[#776e65] leading-none flex items-center gap-2 sm:gap-2.5"
           >
             <svg
-              className="w-[1em] h-[1em] rounded-xl shadow-xs shrink-0"
+              className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl shadow-xs shrink-0"
               viewBox="0 0 250 250"
               fill="none"
             >
