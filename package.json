@@ -6,11 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "rescript build && vite build",
-    "check": "bun run res:format && bun run res:build && bun run test && bun run build",
+    "check": "bun run res:gen && bun run res:format && bun run res:build && bun run test && bun run build",
     "prepare": "lefthook install",
     "res:build": "rescript build",
     "res:clean": "rescript clean",
     "res:format": "rescript format src/App.res src/Controls.res src/Game.res src/Game_sim.res src/Game_spec.res src/Grid.res src/Index.res src/ScoreBoard.res src/StyledCva.res src/StyledCva_spec.res src/SwipeZone.res src/Tile.res src/Utils.res",
+    "res:gen": "bun run scripts/generate-styled-cva.js",
     "sim": "rescript build && bun run ./src/Game_sim.res.js",
     "test": "bun test ./src/Game_spec.res.js ./src/StyledCva_spec.res.js"
   },
