@@ -4,26 +4,24 @@
   "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "res:build": "rescript build",
-    "res:clean": "rescript clean",
-    "res:watch": "rescript build -w",
     "dev": "vite",
     "build": "rescript build && vite build",
-    "preview": "vite preview"
+    "res:build": "rescript build",
+    "res:clean": "rescript clean",
+    "res:format": "rescript format src/App.res src/Controls.res src/Game.res src/Game_spec.res src/Grid.res src/Index.res src/ScoreBoard.res src/SwipeZone.res src/Utils.res",
+    "test": "bun test ./src/Game_spec.res.js"
   },
   "dependencies": {
     "@rescript/react": "^0.15.0",
-    "clsx": "^2.1.1",
-    "lucide-react": "^0.475.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "tailwind-merge": "^3.0.1"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.0.7",
+    "@tailwindcss/vite": "^4.0.0",
     "@vitejs/plugin-react": "^4.3.4",
-    "rescript": "^12.0.0",
-    "tailwindcss": "^4.0.7",
+    "rescript": "^12.0.0-alpha.9",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.3",
     "vite": "^6.1.0"
   }
 }

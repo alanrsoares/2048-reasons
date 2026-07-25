@@ -11,10 +11,10 @@
     "in-source": true
   },
   "suffix": ".res.js",
-  "dependencies": [
-    "@rescript/react"
-  ],
   "jsx": {
     "version": 4
-  }
+  },
+  "dependencies": [
+    "@rescript/react"
+  ]
 }
