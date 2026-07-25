@@ -51,12 +51,10 @@ let make = (~onSwipe: Game.direction => unit, ~children: React.element) => {
           } else {
             onSwipe(Game.Left)
           }
+        } else if diffY > 0.0 {
+          onSwipe(Game.Down)
         } else {
-          if diffY > 0.0 {
-            onSwipe(Game.Down)
-          } else {
-            onSwipe(Game.Up)
-          }
+          onSwipe(Game.Up)
         }
       }
       touchRef.current = None

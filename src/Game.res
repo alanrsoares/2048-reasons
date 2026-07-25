@@ -28,12 +28,7 @@ type moveResult = {
   zeroes: int,
 }
 
-let emptyGrid: grid = list{
-  list{0, 0, 0, 0},
-  list{0, 0, 0, 0},
-  list{0, 0, 0, 0},
-  list{0, 0, 0, 0},
-}
+let emptyGrid: grid = list{list{0, 0, 0, 0}, list{0, 0, 0, 0}, list{0, 0, 0, 0}, list{0, 0, 0, 0}}
 
 let shiftZeroes = (xs: row): row => {
   let nonZeroes = xs->List.filter(x => x != 0)
@@ -125,7 +120,7 @@ let fillRandomEmptyTile = (g: grid): option<grid> => {
   } else {
     let randomIndex = Math.Int.random(0, count)
     let selectedPos = emptyPositions->List.get(randomIndex)
-    
+
     switch selectedPos {
     | Some(pos) =>
       let newValue = Math.random() < 0.9 ? 2 : 4
@@ -191,7 +186,7 @@ let bestMove = (g: grid): option<direction> => {
         Int.toFloat(b.zeroes - a.zeroes)
       }
     })
-    
+
     switch sorted->Array.get(0) {
     | Some(move) => Some(move.direction)
     | None => None

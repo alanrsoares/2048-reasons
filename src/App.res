@@ -3,8 +3,11 @@
 module Dom = {
   type keyboardEvent
   @get external key: keyboardEvent => string = "key"
-  @val external addEventListener: (string, keyboardEvent => unit) => unit = "window.addEventListener"
-  @val external removeEventListener: (string, keyboardEvent => unit) => unit = "window.removeEventListener"
+  @val
+  external addEventListener: (string, keyboardEvent => unit) => unit = "window.addEventListener"
+  @val
+  external removeEventListener: (string, keyboardEvent => unit) => unit =
+    "window.removeEventListener"
 }
 
 module LocalStorage = {
@@ -67,7 +70,11 @@ let reducer = (state: state, action: action): state => {
   | ToggleAutoPlay => {
       ...state,
       isAutoPlaying: !state.isAutoPlaying,
-      status: if !state.isAutoPlaying { Game.AutoPlaying } else { Game.Playing },
+      status: if !state.isAutoPlaying {
+        Game.AutoPlaying
+      } else {
+        Game.Playing
+      },
     }
 
   | Move(dir) =>
@@ -94,14 +101,13 @@ let reducer = (state: state, action: action): state => {
         }
 
         let maxTile = Game.getMaxTile(gridWithRandom)
-        let status =
-          if maxTile >= 2048 && state.status != Game.Won {
-            Game.Won
-          } else if !Game.isMergeable(gridWithRandom) {
-            Game.Lost
-          } else {
-            state.status
-          }
+        let status = if maxTile >= 2048 && state.status != Game.Won {
+          Game.Won
+        } else if !Game.isMergeable(gridWithRandom) {
+          Game.Lost
+        } else {
+          state.status
+        }
 
         {
           grid: gridWithRandom,
@@ -132,14 +138,13 @@ let reducer = (state: state, action: action): state => {
         }
 
         let maxTile = Game.getMaxTile(gridWithRandom)
-        let status =
-          if maxTile >= 2048 && state.status != Game.Won {
-            Game.Won
-          } else if !Game.isMergeable(gridWithRandom) {
-            Game.Lost
-          } else {
-            state.status
-          }
+        let status = if maxTile >= 2048 && state.status != Game.Won {
+          Game.Won
+        } else if !Game.isMergeable(gridWithRandom) {
+          Game.Lost
+        } else {
+          state.status
+        }
 
         {
           grid: gridWithRandom,
@@ -156,10 +161,7 @@ let reducer = (state: state, action: action): state => {
 
 @react.component
 let make = () => {
-  let (state, dispatch) = React.useReducer(
-    reducer,
-    createInitialState(getInitialBestScore()),
-  )
+  let (state, dispatch) = React.useReducer(reducer, createInitialState(getInitialBestScore()))
 
   /* Keyboard Event Listener Effect */
   React.useEffect0(() => {
@@ -191,7 +193,9 @@ let make = () => {
     }
   }, [state.isAutoPlaying])
 
-  <main className="min-h-screen py-8 px-4 flex flex-col items-center justify-between bg-[#faf8ef] text-[#776e65]">
+  <main
+    className="min-h-screen py-8 px-4 flex flex-col items-center justify-between bg-[#faf8ef] text-[#776e65]"
+  >
     <div className="w-full max-w-[460px] flex flex-col items-center gap-5 my-auto">
       /* Header Section */
       <header className="w-full flex flex-col gap-4">
@@ -199,10 +203,14 @@ let make = () => {
         <div className="flex items-start justify-between w-full">
           /* 2048 Title Container with Label Right-Edge Aligned */
           <div className="relative inline-block">
-            <h1 className="text-6xl sm:text-7xl font-black tracking-tight text-[#776e65] leading-none">
+            <h1
+              className="text-6xl sm:text-7xl font-black tracking-tight text-[#776e65] leading-none"
+            >
               {Utils.renderString("2048")}
             </h1>
-            <span className="absolute bottom-0 right-0 translate-y-3/4 px-1.5 py-0.5 rounded bg-[#edc22e] text-white font-extrabold text-[9px] sm:text-[10px] tracking-wider uppercase whitespace-nowrap shadow-xs">
+            <span
+              className="absolute bottom-0 right-0 translate-y-3/4 px-1.5 py-0.5 rounded bg-[#edc22e] text-white font-extrabold text-[9px] sm:text-[10px] tracking-wider uppercase whitespace-nowrap shadow-xs"
+            >
               {Utils.renderString("RESCRIPT V12")}
             </span>
           </div>
@@ -214,7 +222,9 @@ let make = () => {
         <div className="flex items-center justify-between w-full gap-2">
           <p className="text-xs sm:text-sm font-medium text-[#776e65] leading-tight">
             {Utils.renderString("Join the numbers and get to the ")}
-            <strong className="text-[#776e65] font-black">{Utils.renderString("2048 tile!")}</strong>
+            <strong className="text-[#776e65] font-black">
+              {Utils.renderString("2048 tile!")}
+            </strong>
           </p>
 
           <Controls
@@ -227,27 +237,29 @@ let make = () => {
 
       /* Game Grid with Swipe Zone */
       <SwipeZone onSwipe={dir => dispatch(Move(dir))}>
-        <Grid
-          data={state.grid}
-          status={state.status}
-          onRestart={() => dispatch(Reset)}
-        />
+        <Grid data={state.grid} status={state.status} onRestart={() => dispatch(Reset)} />
       </SwipeZone>
 
       /* Game Instructions & Rules */
-      <section className="w-full text-xs font-medium text-[#776e65] leading-relaxed bg-[#ede0c8]/60 p-3.5 rounded-md border border-[#d8cbb3]/80">
+      <section
+        className="w-full text-xs font-medium text-[#776e65] leading-relaxed bg-[#ede0c8]/60 p-3.5 rounded-md border border-[#d8cbb3]/80"
+      >
         <p>
-          <strong className="text-[#776e65] font-black">{Utils.renderString("HOW TO PLAY: ")}</strong>
-          {Utils.renderString("Use your arrow keys or swipe to move the tiles. When two tiles with the same number touch, they merge into one!")}
+          <strong className="text-[#776e65] font-black">
+            {Utils.renderString("HOW TO PLAY: ")}
+          </strong>
+          {Utils.renderString(
+            "Use your arrow keys or swipe to move the tiles. When two tiles with the same number touch, they merge into one!",
+          )}
         </p>
       </section>
     </div>
 
     /* Footer Info */
-    <footer className="mt-6 text-center text-xs font-semibold text-[#8f7a66] flex flex-col items-center gap-1">
-      <p>
-        {Utils.renderString("Rebuilt in ReScript v12, React 19, Vite & Tailwind CSS")}
-      </p>
+    <footer
+      className="mt-6 text-center text-xs font-semibold text-[#8f7a66] flex flex-col items-center gap-1"
+    >
+      <p> {Utils.renderString("Rebuilt in ReScript v12, React 19, Vite & Tailwind CSS")} </p>
     </footer>
   </main>
 }

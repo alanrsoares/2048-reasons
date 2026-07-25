@@ -13,7 +13,12 @@ let getTileColorClass = (val: int): string => {
   | 512 => "tile-512"
   | 1024 => "tile-1024"
   | 2048 => "tile-2048"
-  | _ => if val > 2048 { "tile-super" } else { "bg-[#cdc1b4]/90" }
+  | _ =>
+    if val > 2048 {
+      "tile-super"
+    } else {
+      "bg-[#cdc1b4]/90"
+    }
   }
 }
 
@@ -40,15 +45,11 @@ let renderTiles = (row: Game.row, y: int) => {
       className="w-full h-full p-1.5 sm:p-2"
     >
       <div
-        className={
-          "w-full h-full rounded-xl flex items-center justify-center font-bold transition-all duration-150 ease-out " ++
-          colorClass
-        }
+        className={"w-full h-full rounded-xl flex items-center justify-center font-bold transition-all duration-150 ease-out " ++
+        colorClass}
       >
         {if tile > 0 {
-          <span className={"font-sans tracking-tight " ++ fontSizeClass}>
-            {React.int(tile)}
-          </span>
+          <span className={"font-sans tracking-tight " ++ fontSizeClass}> {React.int(tile)} </span>
         } else {
           React.null
         }}
@@ -69,23 +70,21 @@ let renderRows = (data: Game.grid) => {
 }
 
 @react.component
-let make = (
-  ~data: Game.grid,
-  ~status: Game.status,
-  ~onRestart: unit => unit,
-) => {
+let make = (~data: Game.grid, ~status: Game.status, ~onRestart: unit => unit) => {
   let isGameOver = status == Game.Lost
   let isWon = status == Game.Won
 
-  <div className="relative w-full max-w-[460px] aspect-square p-2 sm:p-3 rounded-2xl bg-[#bbada0] shadow-xl overflow-hidden">
+  <div
+    className="relative w-full max-w-[460px] aspect-square p-2 sm:p-3 rounded-2xl bg-[#bbada0] shadow-xl overflow-hidden"
+  >
     /* 4x4 Grid Rows */
-    <div className="w-full h-full flex flex-col">
-      {renderRows(data)}
-    </div>
+    <div className="w-full h-full flex flex-col"> {renderRows(data)} </div>
 
     /* Game Over / Won Overlay */
     {if isGameOver {
-      <div className="absolute inset-0 rounded-2xl bg-[#faf8ef]/85 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-pop-in z-30 pointer-events-auto">
+      <div
+        className="absolute inset-0 rounded-2xl bg-[#faf8ef]/85 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-pop-in z-30 pointer-events-auto"
+      >
         <h2 className="text-4xl sm:text-5xl font-black text-[#776e65] mb-2">
           {Utils.renderString("Game Over!")}
         </h2>
@@ -100,7 +99,9 @@ let make = (
         </button>
       </div>
     } else if isWon {
-      <div className="absolute inset-0 rounded-2xl bg-[#edc22e]/85 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-pop-in z-30 pointer-events-auto">
+      <div
+        className="absolute inset-0 rounded-2xl bg-[#edc22e]/85 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-pop-in z-30 pointer-events-auto"
+      >
         <h2 className="text-4xl sm:text-5xl font-black text-[#f9f6f2] mb-2">
           {Utils.renderString("You Hit 2048!")}
         </h2>
