@@ -1,0 +1,16 @@
+pre-commit:
+  commands:
+    rescript-format:
+      run: bun run res:format
+    rescript-compile:
+      run: bun run res:build
+
+pre-push:
+  commands:
+    full-quality-gate:
+      run: bun run check
+
+commit-msg:
+  commands:
+    commitlint:
+      run: npx commitlint --edit {1}
