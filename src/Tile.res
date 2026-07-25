@@ -59,10 +59,10 @@ let make = (~tile: Game.tile) => {
 
   <div
     style={styleObj}
-    className="absolute w-1/4 h-1/4 p-1.5 sm:p-2 transition-all duration-150 ease-out select-none"
+    className="absolute w-1/4 h-1/4 p-1.5 sm:p-2 tile-spring-transition select-none"
   >
     <div
-      className={"w-full h-full rounded-xl flex items-center justify-center font-bold transition-all duration-150 ease-out " ++
+      className={"w-full h-full rounded-xl flex items-center justify-center font-bold tile-spring-transition " ++
       colorClass ++
       " " ++
       animationClass}
