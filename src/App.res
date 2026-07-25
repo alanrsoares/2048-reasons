@@ -26,12 +26,11 @@ let getInitialBestScore = (): int => {
 }
 
 type state = {
-  tiles: array<Game.tile>,
+  grid: Game.grid,
   status: Game.status,
   score: int,
   bestScore: int,
   isAutoPlaying: bool,
-  nextId: int,
 }
 
 type action =
@@ -40,15 +39,24 @@ type action =
   | ToggleAutoPlay
   | Reset
 
+let createInitialGrid = (): Game.grid => {
+  switch Game.fillRandomEmptyTile(Game.emptyGrid) {
+  | Some(g1) =>
+    switch Game.fillRandomEmptyTile(g1) {
+    | Some(g2) => g2
+    | None => g1
+    }
+  | None => Game.emptyGrid
+  }
+}
+
 let createInitialState = (bestScore: int): state => {
-  let (tiles, nextId) = Game.createInitialState()
   {
-    tiles,
+    grid: createInitialGrid(),
     status: Game.Playing,
     score: 0,
     bestScore,
     isAutoPlaying: false,
-    nextId,
   }
 }
 
@@ -66,38 +74,41 @@ let reducer = (state: state, action: action): state => {
     if state.status == Game.Lost {
       state
     } else {
-      let res = Game.moveGrid(state.tiles, dir, state.nextId)
-      if !res.moved {
-        if !Game.isMergeable(state.tiles) {
+      let mergedGrid = Game.merge(dir, state.grid)
+      if Game.gridEqual(mergedGrid, state.grid) {
+        if !Game.isMergeable(state.grid) {
           {...state, status: Game.Lost, isAutoPlaying: false}
         } else {
           state
         }
       } else {
-        let (tilesWithRandom, nextId') = Game.addRandomTile(res.tiles, res.nextId)
-        let newScore = state.score + res.scoreGained
+        let gridWithRandom = switch Game.fillRandomEmptyTile(mergedGrid) {
+        | Some(g) => g
+        | None => mergedGrid
+        }
+
+        let newScore = Game.getScore(gridWithRandom)
         let newBest = Math.Int.max(state.bestScore, newScore)
         if newBest > state.bestScore {
           LocalStorage.setItem(storageKey, Int.toString(newBest))
         }
 
-        let maxTile = Game.getMaxTile(tilesWithRandom)
+        let maxTile = Game.getMaxTile(gridWithRandom)
         let status =
           if maxTile >= 2048 && state.status != Game.Won {
             Game.Won
-          } else if !Game.isMergeable(tilesWithRandom) {
+          } else if !Game.isMergeable(gridWithRandom) {
             Game.Lost
           } else {
             state.status
           }
 
         {
-          tiles: tilesWithRandom,
+          grid: gridWithRandom,
           status,
           score: newScore,
           bestScore: newBest,
           isAutoPlaying: state.isAutoPlaying,
-          nextId: nextId',
         }
       }
     }
@@ -106,33 +117,36 @@ let reducer = (state: state, action: action): state => {
     if state.status == Game.Lost {
       {...state, isAutoPlaying: false}
     } else {
-      switch Game.bestMove(state.tiles) {
+      switch Game.bestMove(state.grid) {
       | Some(dir) =>
-        let res = Game.moveGrid(state.tiles, dir, state.nextId)
-        let (tilesWithRandom, nextId') = Game.addRandomTile(res.tiles, res.nextId)
-        let newScore = state.score + res.scoreGained
+        let mergedGrid = Game.merge(dir, state.grid)
+        let gridWithRandom = switch Game.fillRandomEmptyTile(mergedGrid) {
+        | Some(g) => g
+        | None => mergedGrid
+        }
+
+        let newScore = Game.getScore(gridWithRandom)
         let newBest = Math.Int.max(state.bestScore, newScore)
         if newBest > state.bestScore {
           LocalStorage.setItem(storageKey, Int.toString(newBest))
         }
 
-        let maxTile = Game.getMaxTile(tilesWithRandom)
+        let maxTile = Game.getMaxTile(gridWithRandom)
         let status =
           if maxTile >= 2048 && state.status != Game.Won {
             Game.Won
-          } else if !Game.isMergeable(tilesWithRandom) {
+          } else if !Game.isMergeable(gridWithRandom) {
             Game.Lost
           } else {
             state.status
           }
 
         {
-          tiles: tilesWithRandom,
+          grid: gridWithRandom,
           status,
           score: newScore,
           bestScore: newBest,
           isAutoPlaying: state.isAutoPlaying,
-          nextId: nextId',
         }
       | None => {...state, status: Game.Lost, isAutoPlaying: false}
       }
@@ -186,10 +200,10 @@ let make = () => {
           /* 2048 Title Container with Label Right-Edge Aligned */
           <div className="relative inline-block">
             <h1 className="text-6xl sm:text-7xl font-black tracking-tight text-[#776e65] leading-none">
-              {React.string("2048")}
+              {Utils.renderString("2048")}
             </h1>
             <span className="absolute bottom-0 right-0 translate-y-3/4 px-1.5 py-0.5 rounded bg-[#edc22e] text-white font-extrabold text-[9px] sm:text-[10px] tracking-wider uppercase whitespace-nowrap shadow-xs">
-              {React.string("RESCRIPT V12")}
+              {Utils.renderString("RESCRIPT V12")}
             </span>
           </div>
 
@@ -199,8 +213,8 @@ let make = () => {
         /* Row 2: Tagline & Control Buttons */
         <div className="flex items-center justify-between w-full gap-2">
           <p className="text-xs sm:text-sm font-medium text-[#776e65] leading-tight">
-            {React.string("Join the numbers and get to the ")}
-            <strong className="text-[#776e65] font-black">{React.string("2048 tile!")}</strong>
+            {Utils.renderString("Join the numbers and get to the ")}
+            <strong className="text-[#776e65] font-black">{Utils.renderString("2048 tile!")}</strong>
           </p>
 
           <Controls
@@ -214,7 +228,7 @@ let make = () => {
       /* Game Grid with Swipe Zone */
       <SwipeZone onSwipe={dir => dispatch(Move(dir))}>
         <Grid
-          tiles={state.tiles}
+          data={state.grid}
           status={state.status}
           onRestart={() => dispatch(Reset)}
         />
@@ -223,8 +237,8 @@ let make = () => {
       /* Game Instructions & Rules */
       <section className="w-full text-xs font-medium text-[#776e65] leading-relaxed bg-[#ede0c8]/60 p-3.5 rounded-md border border-[#d8cbb3]/80">
         <p>
-          <strong className="text-[#776e65] font-black">{React.string("HOW TO PLAY: ")}</strong>
-          {React.string("Use your arrow keys or swipe to move the tiles. When two tiles with the same number touch, they merge into one!")}
+          <strong className="text-[#776e65] font-black">{Utils.renderString("HOW TO PLAY: ")}</strong>
+          {Utils.renderString("Use your arrow keys or swipe to move the tiles. When two tiles with the same number touch, they merge into one!")}
         </p>
       </section>
     </div>
@@ -232,7 +246,7 @@ let make = () => {
     /* Footer Info */
     <footer className="mt-6 text-center text-xs font-semibold text-[#8f7a66] flex flex-col items-center gap-1">
       <p>
-        {React.string("Rebuilt in ReScript v12, React 19, Vite & Tailwind CSS")}
+        {Utils.renderString("Rebuilt in ReScript v12, React 19, Vite & Tailwind CSS")}
       </p>
     </footer>
   </main>

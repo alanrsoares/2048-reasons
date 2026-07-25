@@ -1,4 +1,4 @@
-// Game.res - Smooth Animated 2048 Core Engine in ReScript v12
+// Game.res - Pure Functional 2048 Engine (Original 2048-Reasons Standard in ReScript v12)
 
 type status =
   | New
@@ -13,209 +13,192 @@ type direction =
   | Up
   | Down
 
-type tile = {
-  id: int,
-  val: int,
-  row: int,
-  col: int,
-  isNew: bool,
-  isMerged: bool,
-}
+type row = list<int>
+type grid = list<row>
 
-type gridMatrix = array<array<int>>
+type position = {
+  x: int,
+  y: int,
+}
 
 type moveResult = {
-  tiles: array<tile>,
-  scoreGained: int,
-  moved: bool,
-  nextId: int,
+  direction: direction,
+  grid: grid,
+  score: int,
+  zeroes: int,
 }
 
-let emptyMatrix = (): gridMatrix => [
-  [0, 0, 0, 0],
-  [0, 0, 0, 0],
-  [0, 0, 0, 0],
-  [0, 0, 0, 0],
-]
+let emptyGrid: grid = list{
+  list{0, 0, 0, 0},
+  list{0, 0, 0, 0},
+  list{0, 0, 0, 0},
+  list{0, 0, 0, 0},
+}
 
-let tilesToMatrix = (tiles: array<tile>): gridMatrix => {
-  let m = emptyMatrix()
-  tiles->Array.forEach(t => {
-    switch m->Array.get(t.row) {
-    | Some(r) => Array.setUnsafe(r, t.col, t.val)
-    | None => ()
+let shiftZeroes = (xs: row): row => {
+  let nonZeroes = xs->List.filter(x => x != 0)
+  let zeroesCount = xs->List.length - nonZeroes->List.length
+  let zeroes = List.make(~length=zeroesCount, 0)
+  List.concat(zeroes, nonZeroes)
+}
+
+let mergeRowRight = (xs: row): row => {
+  let rec merge = (index: int, ys: row): row => {
+    switch (index, ys) {
+    | (0, list{a, b, c, d}) if c == d && c != 0 => merge(1, list{0, a, b, c * 2})
+    | (1, list{a, b, c, d}) if b == c && b != 0 => merge(2, list{0, a, b * 2, d})
+    | (2, list{a, b, c, d}) if a == b && a != 0 => merge(3, list{0, a * 2, c, d})
+    | (0 | 1 | 2, _) => merge(index + 1, ys)
+    | _ => ys
     }
-  })
-  m
+  }
+  merge(0, xs->shiftZeroes)
 }
 
-let getEmptyPositions = (tiles: array<tile>): array<(int, int)> => {
-  let matrix = tilesToMatrix(tiles)
-  let empty = []
-  matrix->Array.forEachWithIndex((r, row) => {
-    r->Array.forEachWithIndex((val, col) => {
-      if val == 0 {
-        let _ = empty->Array.push((row, col))
+let mergeRowLeft = (xs: row): row => {
+  xs->List.reverse->mergeRowRight->List.reverse
+}
+
+let getPosition = (p: position, g: grid): int => {
+  switch g->List.get(p.y) {
+  | Some(r) =>
+    switch r->List.get(p.x) {
+    | Some(val) => val
+    | None => 0
+    }
+  | None => 0
+  }
+}
+
+let getColumns = (g: grid): grid => {
+  List.make(~length=4, 0)->List.mapWithIndex((_, x) => {
+    List.make(~length=4, 0)->List.mapWithIndex((_, y) => {
+      getPosition({x, y}, g)
+    })
+  })
+}
+
+let mergeGridRight = (g: grid): grid => g->List.map(mergeRowRight)
+let mergeGridLeft = (g: grid): grid => g->List.map(mergeRowLeft)
+
+let merge = (dir: direction, g: grid): grid => {
+  switch dir {
+  | Right => mergeGridRight(g)
+  | Left => mergeGridLeft(g)
+  | Up => g->getColumns->mergeGridLeft->getColumns
+  | Down => g->getColumns->mergeGridRight->getColumns
+  }
+}
+
+let findZeroes = (g: grid): list<position> => {
+  let acc = []
+  g->List.forEachWithIndex((r, y) => {
+    r->List.forEachWithIndex((tile, x) => {
+      if tile == 0 {
+        let _ = acc->Array.push({x, y})
       }
     })
   })
-  empty
+  acc->List.fromArray
 }
 
-let addRandomTile = (tiles: array<tile>, nextId: int): (array<tile>, int) => {
-  let empty = getEmptyPositions(tiles)
-  if empty->Array.length == 0 {
-    (tiles, nextId)
+let updateRow = (xs: row, targetX: int, newVal: int): row => {
+  xs->List.mapWithIndex((val, x) => x == targetX ? newVal : val)
+}
+
+let updateGrid = (newVal: int, pos: position, g: grid): grid => {
+  g->List.mapWithIndex((r, y) => {
+    if y == pos.y {
+      updateRow(r, pos.x, newVal)
+    } else {
+      r
+    }
+  })
+}
+
+let fillRandomEmptyTile = (g: grid): option<grid> => {
+  let emptyPositions = findZeroes(g)
+  let count = emptyPositions->List.length
+
+  if count == 0 {
+    None
   } else {
-    let randomIndex = Math.Int.random(0, empty->Array.length)
-    switch empty->Array.get(randomIndex) {
-    | Some((row, col)) =>
-      let val = Math.random() < 0.9 ? 2 : 4
-      let newTile = {
-        id: nextId,
-        val,
-        row,
-        col,
-        isNew: true,
-        isMerged: false,
-      }
-      (Array.concat(tiles, [newTile]), nextId + 1)
-    | None => (tiles, nextId)
+    let randomIndex = Math.Int.random(0, count)
+    let selectedPos = emptyPositions->List.get(randomIndex)
+    
+    switch selectedPos {
+    | Some(pos) =>
+      let newValue = Math.random() < 0.9 ? 2 : 4
+      Some(updateGrid(newValue, pos, g))
+    | None => None
     }
   }
 }
 
-let createInitialState = (): (array<tile>, int) => {
-  let (t1, id1) = addRandomTile([], 1)
-  let (t2, id2) = addRandomTile(t1, id1)
-  (t2, id2)
+let getScore = (g: grid): int => {
+  g->List.reduce(0, (acc, r) => {
+    acc + r->List.reduce(0, (rAcc, tile) => rAcc + tile)
+  })
 }
 
-let moveGrid = (tiles: array<tile>, dir: direction, nextId: int): moveResult => {
-  let newTiles = []
-  let totalScore = ref(0)
-  let anyMoved = ref(false)
-  let curId = ref(nextId)
+let getMaxTile = (g: grid): int => {
+  g->List.reduce(0, (acc, r) => {
+    let rowMax = r->List.reduce(0, (m, tile) => Math.Int.max(m, tile))
+    Math.Int.max(acc, rowMax)
+  })
+}
 
-  let isRowMove = dir == Left || dir == Right
-  let isReverse = dir == Right || dir == Down
+let gridEqual = (g1: grid, g2: grid): bool => {
+  let arr1 = g1->List.toArray->Array.map(List.toArray)
+  let arr2 = g2->List.toArray->Array.map(List.toArray)
 
-  for index in 0 to 3 {
-    let lineTiles = tiles->Array.filter(t => {
-      if isRowMove { t.row == index } else { t.col == index }
-    })
-
-    if lineTiles->Array.length > 0 {
-      let sorted = lineTiles->Array.copy
-      sorted->Array.sort((a, b) => {
-        let pA = isRowMove ? a.col : a.row
-        let pB = isRowMove ? b.col : b.row
-        if isReverse { Int.toFloat(pB - pA) } else { Int.toFloat(pA - pB) }
-      })
-
-      let targetPos = ref(isReverse ? 3 : 0)
-      let step = isReverse ? -1 : 1
-      let i = ref(0)
-      let len = sorted->Array.length
-
-      while i.contents < len {
-        let t1 = Array.getUnsafe(sorted, i.contents)
-        let t2Opt = if i.contents + 1 < len { Some(Array.getUnsafe(sorted, i.contents + 1)) } else { None }
-
-        switch t2Opt {
-        | Some(t2) if t1.val == t2.val =>
-          let newVal = t1.val * 2
-          totalScore.contents = totalScore.contents + newVal
-          anyMoved.contents = true
-
-          let mergedTile = {
-            id: curId.contents,
-            val: newVal,
-            row: if isRowMove { index } else { targetPos.contents },
-            col: if isRowMove { targetPos.contents } else { index },
-            isNew: false,
-            isMerged: true,
-          }
-          curId.contents = curId.contents + 1
-          let _ = newTiles->Array.push(mergedTile)
-          targetPos.contents = targetPos.contents + step
-          i.contents = i.contents + 2
-
-        | _ =>
-          let curPos = isRowMove ? t1.col : t1.row
-          if curPos != targetPos.contents {
-            anyMoved.contents = true
-          }
-          let movedTile = {
-            id: t1.id,
-            val: t1.val,
-            row: if isRowMove { index } else { targetPos.contents },
-            col: if isRowMove { targetPos.contents } else { index },
-            isNew: false,
-            isMerged: false,
-          }
-          let _ = newTiles->Array.push(movedTile)
-          targetPos.contents = targetPos.contents + step
-          i.contents = i.contents + 1
+  arr1->Array.everyWithIndex((r, y) => {
+    r->Array.everyWithIndex((val, x) => {
+      switch arr2->Array.get(y) {
+      | Some(r2) =>
+        switch r2->Array.get(x) {
+        | Some(val2) => val == val2
+        | None => false
         }
+      | None => false
       }
-    }
-  }
-
-  {
-    tiles: newTiles,
-    scoreGained: totalScore.contents,
-    moved: anyMoved.contents,
-    nextId: curId.contents,
-  }
-}
-
-let getScore = (tiles: array<tile>): int => {
-  tiles->Array.reduce(0, (acc, t) => acc + t.val)
-}
-
-let getMaxTile = (tiles: array<tile>): int => {
-  tiles->Array.reduce(0, (acc, t) => Math.Int.max(acc, t.val))
-}
-
-let isMergeable = (tiles: array<tile>): bool => {
-  if tiles->Array.length < 16 {
-    true
-  } else {
-    let resL = moveGrid(tiles, Left, 99999)
-    let resR = moveGrid(tiles, Right, 99999)
-    let resU = moveGrid(tiles, Up, 99999)
-    let resD = moveGrid(tiles, Down, 99999)
-    resL.moved || resR.moved || resU.moved || resD.moved
-  }
-}
-
-let bestMove = (tiles: array<tile>): option<direction> => {
-  let moves = [Left, Right, Up, Down]
-  let validMoves = moves
-    ->Array.map(dir => {
-      let res = moveGrid(tiles, dir, 99999)
-      let emptyCount = getEmptyPositions(res.tiles)->Array.length
-      (dir, res.moved, res.scoreGained, emptyCount)
     })
-    ->Array.filter(((_, moved, _, _)) => moved)
+  })
+}
 
+let getValidMoves = (g: grid): list<moveResult> => {
+  list{Right, Up, Down, Left}
+  ->List.map(dir => {
+    let newGrid = merge(dir, g)
+    let zeroes = findZeroes(newGrid)->List.length
+    let score = getScore(newGrid)
+    {direction: dir, grid: newGrid, score, zeroes}
+  })
+  ->List.filter(move => !gridEqual(move.grid, g))
+}
+
+let bestMove = (g: grid): option<direction> => {
+  let validMoves = getValidMoves(g)->List.toArray
   if validMoves->Array.length == 0 {
     None
   } else {
     let sorted = validMoves->Array.copy
-    sorted->Array.sort(((_, _, scoreA, emptyA), (_, _, scoreB, emptyB)) => {
-      let scoreDiff = scoreB - scoreA
+    sorted->Array.sort((a, b) => {
+      let scoreDiff = b.score - a.score
       if scoreDiff != 0 {
         Int.toFloat(scoreDiff)
       } else {
-        Int.toFloat(emptyB - emptyA)
+        Int.toFloat(b.zeroes - a.zeroes)
       }
     })
-
+    
     switch sorted->Array.get(0) {
-    | Some((dir, _, _, _)) => Some(dir)
+    | Some(move) => Some(move.direction)
     | None => None
     }
   }
+}
+
+let isMergeable = (g: grid): bool => {
+  getValidMoves(g)->List.length > 0
 }
