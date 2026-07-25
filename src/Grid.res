@@ -1,4 +1,35 @@
-// Grid.res - 4x4 Game Board Container with Animated Tiles in ReScript v12
+// Grid.res - 4x4 Game Board Container using @styled-cva/react in ReScript v12
+
+open StyledCva
+
+type overlayProps = {"$type": string}
+
+let overlayVariants: overlayProps => string = cva(
+  "absolute inset-0 rounded-2xl backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-pop-in z-30 pointer-events-auto",
+  {
+    "variants": {
+      "$type": {
+        "lost": "bg-[#faf8ef]/85",
+        "won": "bg-[#edc22e]/85",
+      },
+    },
+    "defaultVariants": {
+      "$type": "lost",
+    },
+  },
+)
+
+let overlayHeadingVariants: overlayProps => string = cva(
+  "text-4xl sm:text-5xl font-black mb-2",
+  {
+    "variants": {
+      "$type": {
+        "lost": "text-[#776e65]",
+        "won": "text-[#f9f6f2]",
+      },
+    },
+  },
+)
 
 @react.component
 let make = (~tiles: array<Game.tile>, ~status: Game.status, ~onRestart: unit => unit) => {
@@ -32,10 +63,8 @@ let make = (~tiles: array<Game.tile>, ~status: Game.status, ~onRestart: unit => 
 
     /* Game Over / Won Overlay */
     {if isGameOver {
-      <div
-        className="absolute inset-0 rounded-2xl bg-[#faf8ef]/85 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-pop-in z-30 pointer-events-auto"
-      >
-        <h2 className="text-4xl sm:text-5xl font-black text-[#776e65] mb-2">
+      <div className={overlayVariants({"$type": "lost"})}>
+        <h2 className={overlayHeadingVariants({"$type": "lost"})}>
           {Utils.renderString("Game Over!")}
         </h2>
         <p className="text-[#8f7a66] font-semibold text-sm mb-6 max-w-xs">
@@ -49,10 +78,8 @@ let make = (~tiles: array<Game.tile>, ~status: Game.status, ~onRestart: unit => 
         </button>
       </div>
     } else if isWon {
-      <div
-        className="absolute inset-0 rounded-2xl bg-[#edc22e]/85 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-pop-in z-30 pointer-events-auto"
-      >
-        <h2 className="text-4xl sm:text-5xl font-black text-[#f9f6f2] mb-2">
+      <div className={overlayVariants({"$type": "won"})}>
+        <h2 className={overlayHeadingVariants({"$type": "won"})}>
           {Utils.renderString("You Hit 2048!")}
         </h2>
         <p className="text-[#f9f6f2] font-semibold text-sm mb-6">

@@ -1,4 +1,6 @@
-// Tile.res - Animated 2048 Tile Component in ReScript v12
+// Tile.res - Animated 2048 Tile Component using @styled-cva/react in ReScript v12
+
+open StyledCva
 
 let getTileColorClass = (val: int): string => {
   switch val {
@@ -34,17 +36,33 @@ let getFontSizeClass = (val: int): string => {
   }
 }
 
+let tileInnerVariants = cva(
+  "w-full h-full rounded-xl flex items-center justify-center font-bold tile-spring-transition",
+  {
+    "variants": {
+      "$anim": {
+        "merged": "animate-merge-pulse z-10",
+        "new": "animate-pop-in z-0",
+        "idle": "z-0",
+      },
+    },
+    "defaultVariants": {
+      "$anim": "idle",
+    },
+  },
+)
+
 @react.component
 let make = (~tile: Game.tile) => {
   let colorClass = getTileColorClass(tile.val)
   let fontSizeClass = getFontSizeClass(tile.val)
 
-  let animationClass = if tile.isMerged {
-    "animate-merge-pulse z-10"
+  let animState = if tile.isMerged {
+    "merged"
   } else if tile.isNew {
-    "animate-pop-in z-0"
+    "new"
   } else {
-    "z-0"
+    "idle"
   }
 
   let topStyle = Int.toString(tile.row * 25) ++ "%"
@@ -61,12 +79,7 @@ let make = (~tile: Game.tile) => {
     style={styleObj}
     className="absolute w-1/4 h-1/4 p-1.5 sm:p-2 tile-spring-transition select-none"
   >
-    <div
-      className={"w-full h-full rounded-xl flex items-center justify-center font-bold tile-spring-transition " ++
-      colorClass ++
-      " " ++
-      animationClass}
-    >
+    <div className={cn([tileInnerVariants({"$anim": animState}), colorClass])}>
       <span className={"font-sans tracking-tight " ++ fontSizeClass}> {React.int(tile.val)} </span>
     </div>
   </div>

@@ -2,7 +2,9 @@
 
 open StyledCva
 
-let buttonVariants = cva(
+type buttonVariantProps = {"$state": string}
+
+let buttonVariants: buttonVariantProps => string = cva(
   "px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-md font-bold text-xs sm:text-sm whitespace-nowrap transition-all active:scale-95 cursor-pointer shadow-xs",
   {
     "variants": {
