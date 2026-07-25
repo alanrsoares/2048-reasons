@@ -241,7 +241,7 @@ let make = () => {
       </section>
     </div>
 
-    /* Footer Info - Pipe Split with ReScript & GitHub Logos */
+    /* Footer Info - Pipe Split with Official ReScript Brandmark & GitHub Logos */
     <footer
       className="mt-6 text-center text-xs font-bold text-[#8f7a66] flex items-center justify-center gap-3"
     >
@@ -251,8 +251,19 @@ let make = () => {
         rel="noopener noreferrer"
         className="flex items-center gap-1.5 hover:text-[#776e65] transition-colors"
       >
-        <svg className="w-4 h-4 text-[#e6484f]" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+        <svg className="w-4 h-4 rounded-xs shadow-2xs" viewBox="0 0 250 250" fill="none">
+          <path
+            fill="#E84F4F"
+            d="M0 80.086C0 46.72 0 30.044 8.496 18.342a44.557 44.557 0 0 1 9.846-9.847C30.032 0 46.719 0 80.082 0h89.83c33.368 0 50.042 0 61.745 8.495a44.452 44.452 0 0 1 9.841 9.847c8.5 11.695 8.5 28.377 8.5 61.744v89.828c0 33.367 0 50.042-8.5 61.744a44.32 44.32 0 0 1-9.841 9.841C219.961 250 203.28 250 169.912 250h-89.83c-33.363 0-50.043 0-61.74-8.501a44.428 44.428 0 0 1-9.846-9.841C0 219.963 0 203.281 0 169.914V80.086Z"
+          />
+          <path
+            fill="#fff"
+            d="M169.41 121.016c16.393 0 29.683-13.29 29.683-29.683s-13.29-29.682-29.683-29.682-29.682 13.29-29.682 29.682c0 16.393 13.289 29.683 29.682 29.683Z"
+          />
+          <path
+            fill="#fff"
+            d="M65.318 87.582c0-9.422 0-14.135 1.84-17.74a16.802 16.802 0 0 1 7.355-7.364c3.6-1.831 8.313-1.831 17.74-1.831h23.564v109.398c0 7.842 0 11.765-1.282 14.854a16.823 16.823 0 0 1-9.11 9.108c-3.091 1.282-7.014 1.282-14.853 1.282-7.842 0-11.765 0-14.854-1.282a16.817 16.817 0 0 1-9.11-9.108c-1.282-3.091-1.282-7.014-1.282-14.854l-.008-82.463Z"
+          />
         </svg>
         <span> {Utils.renderString("ReScript v12")} </span>
       </a>
