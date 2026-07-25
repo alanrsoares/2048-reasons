@@ -1,4 +1,4 @@
-// Grid.res - 4x4 Grid Component in ReScript v12 (Original 2048-Reasons Standard)
+// Grid.res - 4x4 Game Board Container with Animated Tile Sliding in ReScript v12
 
 let getTileColorClass = (val: int): string => {
   switch val {
@@ -34,51 +34,79 @@ let getFontSizeClass = (val: int): string => {
   }
 }
 
-let renderTiles = (row: Game.row, y: int) => {
-  row
-  ->List.mapWithIndex((tile, x) => {
-    let colorClass = getTileColorClass(tile)
-    let fontSizeClass = getFontSizeClass(tile)
-
-    <div
-      key={"tile-" ++ Int.toString(y) ++ "-" ++ Int.toString(x)}
-      className="w-full h-full p-1.5 sm:p-2"
-    >
-      <div
-        className={"w-full h-full rounded-xl flex items-center justify-center font-bold transition-all duration-150 ease-out " ++
-        colorClass}
-      >
-        {if tile > 0 {
-          <span className={"font-sans tracking-tight " ++ fontSizeClass}> {React.int(tile)} </span>
-        } else {
-          React.null
-        }}
-      </div>
-    </div>
-  })
-  ->Utils.renderList
+type activeTile = {
+  key: string,
+  val: int,
+  x: int,
+  y: int,
 }
 
-let renderRows = (data: Game.grid) => {
-  data
-  ->List.mapWithIndex((row, y) => {
-    <div key={"row-" ++ Int.toString(y)} className="grid grid-cols-4 w-full h-1/4">
-      {renderTiles(row, y)}
-    </div>
+let extractActiveTiles = (data: Game.grid): array<activeTile> => {
+  let tiles = []
+  data->List.forEachWithIndex((row, y) => {
+    row->List.forEachWithIndex((val, x) => {
+      if val > 0 {
+        let key = "tile-slot-" ++ Int.toString(y) ++ "-" ++ Int.toString(x)
+        let _ = tiles->Array.push({key, val, x, y})
+      }
+    })
   })
-  ->Utils.renderList
+  tiles
 }
 
 @react.component
 let make = (~data: Game.grid, ~status: Game.status, ~onRestart: unit => unit) => {
   let isGameOver = status == Game.Lost
   let isWon = status == Game.Won
+  let emptyCells = Array.make(~length=16, 0)
+  let activeTiles = extractActiveTiles(data)
 
   <div
     className="relative w-full max-w-[460px] aspect-square p-2 sm:p-3 rounded-2xl bg-[#bbada0] shadow-xl overflow-hidden"
   >
-    /* 4x4 Grid Rows */
-    <div className="w-full h-full flex flex-col"> {renderRows(data)} </div>
+    /* Static Background 4x4 Grid Slots */
+    <div className="w-full h-full grid grid-cols-4 grid-rows-4">
+      {emptyCells
+      ->Array.mapWithIndex((_, idx) => {
+        <div key={"slot-" ++ Int.toString(idx)} className="w-full h-full p-1.5 sm:p-2">
+          <div className="w-full h-full rounded-xl bg-[#cdc1b4]/90" />
+        </div>
+      })
+      ->Utils.renderArray}
+    </div>
+
+    /* Dynamic Absolute Animated Tiles Container with Smooth Sliding Transitions */
+    <div className="absolute inset-2 sm:inset-3 pointer-events-none">
+      {activeTiles
+      ->Array.map(t => {
+        let colorClass = getTileColorClass(t.val)
+        let fontSizeClass = getFontSizeClass(t.val)
+        let topStyle = Int.toString(t.y * 25) ++ "%"
+        let leftStyle = Int.toString(t.x * 25) ++ "%"
+        let styleObj = ReactDOMStyle._dictToStyle(
+          dict{
+            "top": topStyle,
+            "left": leftStyle,
+          },
+        )
+
+        <div
+          key={t.key}
+          style={styleObj}
+          className="absolute w-1/4 h-1/4 p-1.5 sm:p-2 transition-all duration-150 ease-out select-none"
+        >
+          <div
+            className={"w-full h-full rounded-xl flex items-center justify-center font-bold animate-pop-in " ++
+            colorClass}
+          >
+            <span className={"font-sans tracking-tight " ++ fontSizeClass}>
+              {React.int(t.val)}
+            </span>
+          </div>
+        </div>
+      })
+      ->Utils.renderArray}
+    </div>
 
     /* Game Over / Won Overlay */
     {if isGameOver {
