@@ -29,11 +29,12 @@ let getInitialBestScore = (): int => {
 }
 
 type state = {
-  grid: Game.grid,
+  tiles: array<Game.tile>,
   status: Game.status,
   score: int,
   bestScore: int,
   isAutoPlaying: bool,
+  nextId: int,
 }
 
 type action =
@@ -42,24 +43,15 @@ type action =
   | ToggleAutoPlay
   | Reset
 
-let createInitialGrid = (): Game.grid => {
-  switch Game.fillRandomEmptyTile(Game.emptyGrid) {
-  | Some(g1) =>
-    switch Game.fillRandomEmptyTile(g1) {
-    | Some(g2) => g2
-    | None => g1
-    }
-  | None => Game.emptyGrid
-  }
-}
-
 let createInitialState = (bestScore: int): state => {
+  let (tiles, nextId) = Game.createInitialState()
   {
-    grid: createInitialGrid(),
+    tiles,
     status: Game.Playing,
     score: 0,
     bestScore,
     isAutoPlaying: false,
+    nextId,
   }
 }
 
@@ -81,40 +73,37 @@ let reducer = (state: state, action: action): state => {
     if state.status == Game.Lost {
       state
     } else {
-      let mergedGrid = Game.merge(dir, state.grid)
-      if Game.gridEqual(mergedGrid, state.grid) {
-        if !Game.isMergeable(state.grid) {
+      let res = Game.moveGrid(state.tiles, dir, state.nextId)
+      if !res.moved {
+        if !Game.isMergeable(state.tiles) {
           {...state, status: Game.Lost, isAutoPlaying: false}
         } else {
           state
         }
       } else {
-        let gridWithRandom = switch Game.fillRandomEmptyTile(mergedGrid) {
-        | Some(g) => g
-        | None => mergedGrid
-        }
-
-        let newScore = Game.getScore(gridWithRandom)
+        let (tilesWithRandom, nextId') = Game.addRandomTile(res.tiles, res.nextId)
+        let newScore = state.score + res.scoreGained
         let newBest = Math.Int.max(state.bestScore, newScore)
         if newBest > state.bestScore {
           LocalStorage.setItem(storageKey, Int.toString(newBest))
         }
 
-        let maxTile = Game.getMaxTile(gridWithRandom)
+        let maxTile = Game.getMaxTile(tilesWithRandom)
         let status = if maxTile >= 2048 && state.status != Game.Won {
           Game.Won
-        } else if !Game.isMergeable(gridWithRandom) {
+        } else if !Game.isMergeable(tilesWithRandom) {
           Game.Lost
         } else {
           state.status
         }
 
         {
-          grid: gridWithRandom,
+          tiles: tilesWithRandom,
           status,
           score: newScore,
           bestScore: newBest,
           isAutoPlaying: state.isAutoPlaying,
+          nextId: nextId',
         }
       }
     }
@@ -123,35 +112,32 @@ let reducer = (state: state, action: action): state => {
     if state.status == Game.Lost {
       {...state, isAutoPlaying: false}
     } else {
-      switch Game.bestMove(state.grid) {
+      switch Game.bestMove(state.tiles) {
       | Some(dir) =>
-        let mergedGrid = Game.merge(dir, state.grid)
-        let gridWithRandom = switch Game.fillRandomEmptyTile(mergedGrid) {
-        | Some(g) => g
-        | None => mergedGrid
-        }
-
-        let newScore = Game.getScore(gridWithRandom)
+        let res = Game.moveGrid(state.tiles, dir, state.nextId)
+        let (tilesWithRandom, nextId') = Game.addRandomTile(res.tiles, res.nextId)
+        let newScore = state.score + res.scoreGained
         let newBest = Math.Int.max(state.bestScore, newScore)
         if newBest > state.bestScore {
           LocalStorage.setItem(storageKey, Int.toString(newBest))
         }
 
-        let maxTile = Game.getMaxTile(gridWithRandom)
+        let maxTile = Game.getMaxTile(tilesWithRandom)
         let status = if maxTile >= 2048 && state.status != Game.Won {
           Game.Won
-        } else if !Game.isMergeable(gridWithRandom) {
+        } else if !Game.isMergeable(tilesWithRandom) {
           Game.Lost
         } else {
           state.status
         }
 
         {
-          grid: gridWithRandom,
+          tiles: tilesWithRandom,
           status,
           score: newScore,
           bestScore: newBest,
           isAutoPlaying: state.isAutoPlaying,
+          nextId: nextId',
         }
       | None => {...state, status: Game.Lost, isAutoPlaying: false}
       }
@@ -237,7 +223,7 @@ let make = () => {
 
       /* Game Grid with Swipe Zone */
       <SwipeZone onSwipe={dir => dispatch(Move(dir))}>
-        <Grid data={state.grid} status={state.status} onRestart={() => dispatch(Reset)} />
+        <Grid tiles={state.tiles} status={state.status} onRestart={() => dispatch(Reset)} />
       </SwipeZone>
 
       /* Game Instructions & Rules */
