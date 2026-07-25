@@ -1,4 +1,4 @@
-// Game.res - 2048 Core Engine with Corner-Monotonic Solver Strategy in ReScript v12
+// Game.res - 2048 Core Engine with 2-Step Lookahead Expectimax Solver Strategy in ReScript v12
 
 type status =
   | New
@@ -211,12 +211,12 @@ let isMergeable = (tiles: array<tile>): bool => {
   }
 }
 
-/* Snake Weight Matrix anchoring highest values towards bottom-right [3, 3] */
+/* Snake Weight Matrix anchoring max values at top-left [0, 0] */
 let snakeWeightMatrix = [
-  [1, 2, 4, 8],
-  [128, 64, 32, 16],
-  [256, 512, 1024, 2048],
-  [32768, 16384, 8192, 4096],
+  [65536.0, 32768.0, 16384.0, 8192.0],
+  [512.0, 1024.0, 2048.0, 4096.0],
+  [256.0, 128.0, 64.0, 32.0],
+  [2.0, 4.0, 8.0, 16.0],
 ]
 
 let evaluateGrid = (tiles: array<tile>): float => {
@@ -234,7 +234,7 @@ let evaluateGrid = (tiles: array<tile>): float => {
             switch snakeWeightMatrix[r] {
             | Some(wRow) =>
               switch wRow[c] {
-              | Some(w) => score := score.contents +. Int.toFloat(val * w)
+              | Some(w) => score := score.contents +. Int.toFloat(val) *. w
               | None => ()
               }
             | None => ()
@@ -247,23 +247,35 @@ let evaluateGrid = (tiles: array<tile>): float => {
     }
   }
 
-  let emptyBonus = Int.toFloat(emptyCount * 5000)
+  let emptyBonus = Int.toFloat(emptyCount * emptyCount) *. 5000.0
   score.contents +. emptyBonus
 }
 
-/* Corner-Monotonic Expectimax Solver Strategy */
+/* 2-Step Lookahead Expectimax Solver Strategy */
 let bestMove = (tiles: array<tile>): option<direction> => {
-  let directions = [Down, Right, Left, Up]
+  let directions = [Up, Left, Right, Down]
   let bestDir = ref(None)
   let maxEval = ref(-1.0)
 
-  directions->Array.forEach(dir => {
-    let res = moveGrid(tiles, dir, 999999)
-    if res.moved {
-      let evalScore = evaluateGrid(res.tiles) +. Int.toFloat(res.scoreGained * 10)
-      if evalScore > maxEval.contents {
-        maxEval := evalScore
-        bestDir := Some(dir)
+  directions->Array.forEach(dir1 => {
+    let res1 = moveGrid(tiles, dir1, 999999)
+    if res1.moved {
+      let eval1 = evaluateGrid(res1.tiles) +. Int.toFloat(res1.scoreGained) *. 10000.0
+
+      let maxStep2 = ref(eval1)
+      directions->Array.forEach(dir2 => {
+        let res2 = moveGrid(res1.tiles, dir2, 999999)
+        if res2.moved {
+          let eval2 = evaluateGrid(res2.tiles) +. Int.toFloat(res2.scoreGained) *. 10000.0
+          if eval2 > maxStep2.contents {
+            maxStep2 := eval2
+          }
+        }
+      })
+
+      if maxStep2.contents > maxEval.contents {
+        maxEval := maxStep2.contents
+        bestDir := Some(dir1)
       }
     }
   })

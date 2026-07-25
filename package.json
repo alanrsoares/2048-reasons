@@ -10,7 +10,8 @@
     "prepare": "lefthook install",
     "res:build": "rescript build",
     "res:clean": "rescript clean",
-    "res:format": "rescript format src/App.res src/Controls.res src/Game.res src/Game_spec.res src/Grid.res src/Index.res src/ScoreBoard.res src/SwipeZone.res src/Tile.res src/Utils.res",
+    "res:format": "rescript format src/App.res src/Controls.res src/Game.res src/Game_sim.res src/Game_spec.res src/Grid.res src/Index.res src/ScoreBoard.res src/SwipeZone.res src/Tile.res src/Utils.res",
+    "sim": "rescript build && bun run ./src/Game_sim.res.js",
     "test": "bun test ./src/Game_spec.res.js"
   },
   "dependencies": {
