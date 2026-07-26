@@ -6,20 +6,20 @@
   "scripts": {
     "dev": "vite",
     "build": "rescript build && vite build",
-    "check": "bun run res:gen && bun run res:format && bun run res:build && bun run test && bun run build",
+    "check": "bun run res:format && bun run res:build && bun run test && bun run build",
     "prepare": "lefthook install",
     "res:build": "rescript build",
     "res:clean": "rescript clean",
-    "res:format": "rescript format src/App.res src/Index.res src/components/Controls.res src/components/Grid.res src/components/ScoreBoard.res src/components/SwipeZone.res src/components/Tile.res src/engine/Game.res src/engine/Game_sim.res src/engine/Game_spec.res src/lib/StyledCva.res src/lib/StyledCva_spec.res src/lib/Utils.res tests/smoke/App_smoke_spec.res scripts/GenStyledCva.res",
-    "res:gen": "rescript build && bun run ./scripts/GenStyledCva.res.js",
+    "res:format": "rescript format src/App.res src/Index.res src/components/Controls.res src/components/Grid.res src/components/ScoreBoard.res src/components/SwipeZone.res src/components/Tile.res src/engine/Game.res src/engine/Game_sim.res src/engine/Game_spec.res src/lib/Utils.res tests/smoke/App_smoke_spec.res",
     "sim": "rescript build && bun run ./src/engine/Game_sim.res.js",
-    "test": "bun test ./src/engine/Game_spec.res.js ./src/lib/StyledCva_spec.res.js ./tests/smoke/App_smoke_spec.res.js",
-    "test:unit": "bun test ./src/engine/Game_spec.res.js ./src/lib/StyledCva_spec.res.js",
+    "test": "bun test ./src/engine/Game_spec.res.js ./tests/smoke/App_smoke_spec.res.js",
+    "test:unit": "bun test ./src/engine/Game_spec.res.js",
     "test:smoke": "bun test ./tests/smoke/App_smoke_spec.res.js"
   },
   "dependencies": {
     "@rescript/react": "^0.15.0",
     "@styled-cva/react": "^0.7.1",
+    "@styled-cva/rescript": "^0.7.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

@@ -22,6 +22,7 @@
     "version": 4
   },
   "dependencies": [
-    "@rescript/react"
+    "@rescript/react",
+    "@styled-cva/rescript"
   ]
 }
