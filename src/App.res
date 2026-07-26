@@ -211,9 +211,7 @@ let make = () => {
     mainShell,
     {
       children: React.array([
-        <div
-          key="content" className="w-full max-w-[460px] flex flex-col items-center gap-5 my-auto"
-        >
+        <div key="content" className="w-full max-w-115 flex flex-col items-center gap-5 my-auto">
           /* Header Section */
           {React.createElement(
             headerBox,
