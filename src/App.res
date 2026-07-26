@@ -20,13 +20,17 @@ module LocalStorage = {
 let storageKey = "2048_reasons_best_score"
 
 let getInitialBestScore = (): int => {
-  switch LocalStorage.getItem(storageKey)->Null.toOption {
-  | Some(valStr) =>
-    switch Int.fromString(valStr) {
-    | Some(n) => n
+  if %raw("typeof window !== 'undefined' && typeof localStorage !== 'undefined'") {
+    switch LocalStorage.getItem(storageKey)->Null.toOption {
+    | Some(valStr) =>
+      switch Int.fromString(valStr) {
+      | Some(n) => n
+      | None => 0
+      }
     | None => 0
     }
-  | None => 0
+  } else {
+    0
   }
 }
 
@@ -86,7 +90,10 @@ let reducer = (state: state, action: action): state => {
         let (tilesWithRandom, nextId') = Game.addRandomTile(res.tiles, res.nextId)
         let newScore = state.score + res.scoreGained
         let newBest = Math.Int.max(state.bestScore, newScore)
-        if newBest > state.bestScore {
+        if (
+          newBest > state.bestScore &&
+            %raw("typeof window !== 'undefined' && typeof localStorage !== 'undefined'")
+        ) {
           LocalStorage.setItem(storageKey, Int.toString(newBest))
         }
 
@@ -120,7 +127,10 @@ let reducer = (state: state, action: action): state => {
         let (tilesWithRandom, nextId') = Game.addRandomTile(res.tiles, res.nextId)
         let newScore = state.score + res.scoreGained
         let newBest = Math.Int.max(state.bestScore, newScore)
-        if newBest > state.bestScore {
+        if (
+          newBest > state.bestScore &&
+            %raw("typeof window !== 'undefined' && typeof localStorage !== 'undefined'")
+        ) {
           LocalStorage.setItem(storageKey, Int.toString(newBest))
         }
 

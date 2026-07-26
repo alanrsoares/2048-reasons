@@ -8,6 +8,10 @@
     {
       "dir": "scripts",
       "subdirs": true
+    },
+    {
+      "dir": "tests",
+      "subdirs": true
     }
   ],
   "package-specs": {
