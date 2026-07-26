@@ -5,7 +5,7 @@ module Fs = {
 }
 
 module Path = {
-  @module("node:path") external join: (string, string, string) => string = "join"
+  @module("node:path") external join: (string, string, string, string) => string = "join"
 }
 
 module Process = {
@@ -137,7 +137,7 @@ let generateBindings = (): string => {
 }
 
 let main = () => {
-  let outputPath = Path.join(Process.cwd(), "src", "StyledCva.res")
+  let outputPath = Path.join(Process.cwd(), "src", "lib", "StyledCva.res")
   let content = generateBindings()
   Fs.writeFileSync(outputPath, content, "utf8")
   Console.log(

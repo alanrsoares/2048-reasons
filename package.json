@@ -10,10 +10,10 @@
     "prepare": "lefthook install",
     "res:build": "rescript build",
     "res:clean": "rescript clean",
-    "res:format": "rescript format src/App.res src/Controls.res src/Game.res src/Game_sim.res src/Game_spec.res src/Grid.res src/Index.res src/ScoreBoard.res src/StyledCva.res src/StyledCva_spec.res src/SwipeZone.res src/Tile.res src/Utils.res scripts/GenStyledCva.res",
+    "res:format": "rescript format src/App.res src/Index.res src/components/Controls.res src/components/Grid.res src/components/ScoreBoard.res src/components/SwipeZone.res src/components/Tile.res src/engine/Game.res src/engine/Game_sim.res src/lib/StyledCva.res src/lib/Utils.res src/tests/Game_spec.res src/tests/StyledCva_spec.res scripts/GenStyledCva.res",
     "res:gen": "rescript build && bun run ./scripts/GenStyledCva.res.js",
-    "sim": "rescript build && bun run ./src/Game_sim.res.js",
-    "test": "bun test ./src/Game_spec.res.js ./src/StyledCva_spec.res.js"
+    "sim": "rescript build && bun run ./src/engine/Game_sim.res.js",
+    "test": "bun test ./src/tests/Game_spec.res.js ./src/tests/StyledCva_spec.res.js"
   },
   "dependencies": {
     "@rescript/react": "^0.15.0",
