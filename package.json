@@ -19,7 +19,7 @@
   "dependencies": {
     "@rescript/react": "^0.15.0",
     "@styled-cva/react": "^0.7.1",
-    "@styled-cva/rescript": "^0.8.0",
+    "@styled-cva/rescript": "^0.8.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
