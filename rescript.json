@@ -6,10 +6,6 @@
       "subdirs": true
     },
     {
-      "dir": "scripts",
-      "subdirs": true
-    },
-    {
       "dir": "tests",
       "subdirs": true
     }
